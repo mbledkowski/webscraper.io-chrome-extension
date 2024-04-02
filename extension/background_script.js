@@ -213,7 +213,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const s = i(15);
+    const s = i(14);
     t.default = class {
         constructor(e) {
             this.updateData(e);
@@ -465,14 +465,14 @@
             i.scrapingJobId = this.scrapingJobId, "ERROR" === e || "WARNING" === e ? console.error(JSON.stringify(i)) : console.log(JSON.stringify(i));
         }
         error(e, t = {}) {
-            t.stack = new Error().stack, this.log("ERROR", e, t);
+            t.stack || (t.stack = new Error().stack), this.log("ERROR", e, t);
         }
         info(e, t = {}) {
             this.log("INFO", e, t);
         }
         debug(e, t = {}) {}
         warning(e, t = {}) {
-            t.stack = new Error().stack, this.log("WARNING", e, t);
+            t.stack || (t.stack = new Error().stack), this.log("WARNING", e, t);
         }
         notice(e, t = {}) {
             this.log("NOTICE", e, t);
@@ -491,7 +491,7 @@
         }
     }
     t.default = new a({});
-}, , , , , function(e, t, i) {
+}, , , , function(e, t, i) {
     "use strict";
     var n = this && this.__awaiter || function(e, t, i, n) {
         return new (i || (i = Promise))(function(a, r) {
@@ -559,7 +559,7 @@
         }
     }
     t.default = r;
-}, , , function(e, t, i) {
+}, , , , function(e, t, i) {
     "use strict";
     function n(e) {
         return void 0 === e || null === e;
@@ -5212,7 +5212,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(15), s = i(6), c = i(91);
+    const o = i(14), s = i(6), c = i(91);
     t.default = class extends s.default {
         constructor(e) {
             super(e), !0 === e.discardInitialElements || "discard" === e.discardInitialElements ? this.discardInitialElements = "discard" : !1 === e.discardInitialElements || "do-not-discard" === e.discardInitialElements ? this.discardInitialElements = "do-not-discard" : "discard-when-click-element-exists" === e.discardInitialElements ? this.discardInitialElements = "discard-when-click-element-exists" : this.discardInitialElements = "do-not-discard";
@@ -5491,7 +5491,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(15), s = i(6);
+    const o = i(14), s = i(6);
     t.default = class extends s.default {
         constructor(e) {
             super(e);
@@ -17315,7 +17315,18 @@
         getElementData(e, t) {
             return n(this, void 0, void 0, function*() {
                 const i = yield e.getAttr("content"), n = yield e.getTagName();
-                return i ? i.trim() : "image" === t ? (yield e.getNativeAttr("src")).trim() : "a" === n || "link" === n ? (yield e.getNativeAttr("href")).trim() : (yield e.getText()).trim();
+                if (i) return i.trim();
+                if ("image" === t) {
+                    const t = yield e.getNativeAttr("src");
+                    if (t) return t.trim();
+                    const i = yield e.getNativeAttr("href");
+                    return i ? i.trim() : "";
+                }
+                if ("a" === n || "link" === n) {
+                    const t = yield e.getNativeAttr("href");
+                    return t ? t.trim() : "";
+                }
+                return (yield e.getText()).trim();
             });
         }
         getDirectChildElements(e, t, i) {
@@ -18156,7 +18167,7 @@
     const n = i(10);
     t.default = class {
         static isContentTypeUnknown(e) {
-            return !!e && !e.match(/^(text\/.*|xml|application\/xml.*|application\/json.*|application\/(java|ecma|type)script.*|application\/html.*)$/) && (n.default.notice("unknown content type loaded", {
+            return !!e && !(e = e.toLocaleLowerCase()).match(/^(text\/[^\n]*?|[^\n]*?(html|xml|json)[^\n]*?|application\/[^\n]*?(java|ecma|type)script[^\n]*?)$/) && (n.default.notice("unknown content type loaded", {
                 contentType: e
             }), !0);
         }
@@ -18923,7 +18934,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(37);
+    const a = i(14), r = i(37);
     t.default = class extends r.default {
         constructor(e, t) {
             super(), this.webPage = e, this.sitemap = t;
@@ -19182,7 +19193,8 @@
                         parentSelector: e.parentSelector,
                         sitemapName: i._id,
                         driver: n.getDriverType(),
-                        error: r
+                        error: r,
+                        stack: t.stack
                     };
                     r.startsWith("PAGE_STATUS_CODE_ERROR") ? a.default.notice("Job execution failed", o) : r.startsWith("PAGE_REQUEST_ERROR") ? a.default.notice("Job execution failed", o) : r.startsWith("PAGE_UNKNOWN_CONTENT_TYPE_ERROR") ? a.default.notice("Job execution failed", o) : r.includes("tabStatusLoadedPromise") ? a.default.notice("Job execution failed", o) : r.includes("tabNetworkStatusLoadedPromise") ? a.default.notice("Job execution failed", o) : r.includes("checkContentScriptReachable") || r.includes("connecting to content script timed out") ? a.default.notice("Job execution failed", o) : a.default.error("Job execution failed", o), 
                     e.markAsFailed(t);
@@ -19258,7 +19270,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(37);
+    const a = i(14), r = i(37);
     t.default = class extends r.default {
         constructor(e = 9e5) {
             super(), this.timeout = e;
@@ -19429,7 +19441,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(10), o = i(37);
+    const a = i(14), r = i(10), o = i(37);
     t.default = class extends o.default {
         constructor(e) {
             super(), this.webPage = e, this.captchaDetectionSelectors = [ "iframe[src*='https://www.google.com/recaptcha/api2/']" ];
@@ -19488,7 +19500,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(10), o = i(37);
+    const a = i(14), r = i(10), o = i(37);
     t.default = class extends o.default {
         constructor(e, t) {
             super(), this.webPage = e, this.sitemap = t;
@@ -19599,7 +19611,7 @@
         Object.defineProperty(t, "__esModule", {
             value: !0
         });
-        const a = i(15), r = i(10);
+        const a = i(14), r = i(10);
         t.default = class {
             static getFileFilename(e) {
                 const t = e.split("/");
@@ -19644,8 +19656,16 @@
                             url: i.url
                         }), yield this.storage.syncExecutedJobs()), !0 === i.failed && i.error_message) {
                             const t = i.error_message.toString();
-                            -1 === t.indexOf("no such session") && -1 === t.indexOf("chrome not reachable") && -1 === t.indexOf("session deleted because of page crash") || (r.default.warning("exiting scraper process because chrome driver failed"), 
-                            e.exit());
+                            if (-1 !== t.indexOf("no such session") || -1 !== t.indexOf("chrome not reachable") || -1 !== t.indexOf("session deleted because of page crash") || t.includes("REMOTE_CHROME_CLIENT_RECEIVED_REQUEST_WHILE_WAITING_FOR_PREVIOUS")) {
+                                try {
+                                    yield this.browser.close();
+                                } catch (e) {
+                                    r.default.notice("an error occured while closing browser during on-error tear down", {
+                                        error: e.toString()
+                                    });
+                                }
+                                r.default.warning("exiting scraper process because chrome driver failed"), e.exit();
+                            }
                         }
                         yield this.sleepRequestInterval(n);
                     }
@@ -26328,7 +26348,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(378), r = i(15), o = i(397), s = i(10);
+    const a = i(378), r = i(14), o = i(397), s = i(10);
     t.default = class {
         constructor(e) {
             this.surveyServer = "https://www.webscraper.io/", this.surveyInterval = 144e5, this.statId = e.statId, 
@@ -26918,7 +26938,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(10), o = i(402);
+    const a = i(14), r = i(10), o = i(402);
     t.default = class extends o.default {
         constructor(e) {
             super(e), this.pageLoadDelay = e.pageLoadDelay, this.failOnErrorPages = !1 !== e.failOnErrorPages, 
@@ -27269,7 +27289,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(185), o = i(10), s = i(405);
+    const a = i(14), r = i(185), o = i(10), s = i(405);
     t.default = class extends s.default {
         constructor() {
             super(...arguments), this.tabNetworkStatusRequestinitializedCallbacks = [], this.tabNetworkStatusRequestcompletedCallbacks = [], 
@@ -27376,7 +27396,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(406), r = i(15), o = i(409);
+    const a = i(406), r = i(14), o = i(409);
     t.default = class extends o.default {
         constructor() {
             super(...arguments), this.ajaxRequests = {}, this.waitAjaxTimeout = 1e4, this.currentlyMonitoredDomain = "", 
@@ -27738,16 +27758,16 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(10), r = i(411);
+    const a = i(10), r = i(411), o = i(14);
     t.default = class extends r.default {
         getScreenShotBase64() {
             return n(this, void 0, void 0, function*() {
-                return yield new Promise((e, t) => {
+                const e = new Promise((e, t) => {
                     chrome.tabs.captureVisibleTab(this.windowId, {
                         quality: 50
                     }, t => {
                         const i = chrome.runtime.lastError;
-                        if (void 0 !== i && null !== i) return a.default.error("Chrome tab capture error", {
+                        if (void 0 !== i && null !== i) return a.default.notice("Chrome tab capture error", {
                             error: JSON.stringify(i)
                         }), void e("");
                         if (void 0 === t) return void e("");
@@ -27755,6 +27775,7 @@
                         e(n);
                     });
                 });
+                return yield o.default.timeoutPromise(e, 1e4, "getScreenShotBase64Browser");
             });
         }
     };
@@ -27980,7 +28001,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(15), r = i(10), o = i(413);
+    const a = i(14), r = i(10), o = i(413);
     t.default = class extends o.default {
         constructor() {
             super(...arguments), this.tabUpdatedListener = null, this.tabRemovedListener = null, 

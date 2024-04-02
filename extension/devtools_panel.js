@@ -131,7 +131,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(14);
+        var n = i(15);
         if ("production" !== t.env.NODE_ENV) {
             n = function(e, t) {
                 if (void 0 === t) throw new Error("`warning(condition, format, ...args)` requires a warning message argument");
@@ -282,7 +282,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const s = i(15);
+    const s = i(14);
     t.default = class {
         constructor(e) {
             this.updateData(e);
@@ -632,14 +632,14 @@
             i.scrapingJobId = this.scrapingJobId, "ERROR" === e || "WARNING" === e ? console.error(JSON.stringify(i)) : console.log(JSON.stringify(i));
         }
         error(e, t = {}) {
-            t.stack = new Error().stack, this.log("ERROR", e, t);
+            t.stack || (t.stack = new Error().stack), this.log("ERROR", e, t);
         }
         info(e, t = {}) {
             this.log("INFO", e, t);
         }
         debug(e, t = {}) {}
         warning(e, t = {}) {
-            t.stack = new Error().stack, this.log("WARNING", e, t);
+            t.stack || (t.stack = new Error().stack), this.log("WARNING", e, t);
         }
         notice(e, t = {}) {
             this.log("NOTICE", e, t);
@@ -881,20 +881,6 @@
     }).call(t, i(0));
 }, function(e, t, i) {
     "use strict";
-    function n(e) {
-        return function() {
-            return e;
-        };
-    }
-    var a = function() {};
-    a.thatReturns = n, a.thatReturnsFalse = n(!1), a.thatReturnsTrue = n(!0), a.thatReturnsNull = n(null), 
-    a.thatReturnsThis = function() {
-        return this;
-    }, a.thatReturnsArgument = function(e) {
-        return e;
-    }, e.exports = a;
-}, function(e, t, i) {
-    "use strict";
     var n = this && this.__awaiter || function(e, t, i, n) {
         return new (i || (i = Promise))(function(a, r) {
             function o(e) {
@@ -961,6 +947,20 @@
         }
     }
     t.default = r;
+}, function(e, t, i) {
+    "use strict";
+    function n(e) {
+        return function() {
+            return e;
+        };
+    }
+    var a = function() {};
+    a.thatReturns = n, a.thatReturnsFalse = n(!1), a.thatReturnsTrue = n(!0), a.thatReturnsNull = n(null), 
+    a.thatReturnsThis = function() {
+        return this;
+    }, a.thatReturnsArgument = function(e) {
+        return e;
+    }, e.exports = a;
 }, function(e, t, i) {
     "use strict";
     e.exports = {
@@ -1684,7 +1684,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(8), a = i(27), r = i(14), o = i(2), s = !1, c = "function" == typeof Proxy, l = [ "dispatchConfig", "_targetInst", "nativeEvent", "isDefaultPrevented", "isPropagationStopped", "_dispatchListeners", "_dispatchInstances" ], u = {
+        var n = i(8), a = i(27), r = i(15), o = i(2), s = !1, c = "function" == typeof Proxy, l = [ "dispatchConfig", "_targetInst", "nativeEvent", "isDefaultPrevented", "isPropagationStopped", "_dispatchListeners", "_dispatchInstances" ], u = {
             type: null,
             target: null,
             currentTarget: r.thatReturnsNull,
@@ -6666,7 +6666,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(8), a = i(14), r = i(2), o = a;
+        var n = i(8), a = i(15), r = i(2), o = a;
         if ("production" !== t.env.NODE_ENV) {
             var s = [ "address", "applet", "area", "article", "aside", "base", "basefont", "bgsound", "blockquote", "body", "br", "button", "caption", "center", "col", "colgroup", "dd", "details", "dir", "div", "dl", "dt", "embed", "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "iframe", "img", "input", "isindex", "li", "link", "listing", "main", "marquee", "menu", "menuitem", "meta", "nav", "noembed", "noframes", "noscript", "object", "ol", "p", "param", "plaintext", "pre", "script", "section", "select", "source", "style", "summary", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "title", "tr", "track", "ul", "wbr", "xmp" ], c = [ "applet", "caption", "html", "table", "td", "th", "marquee", "object", "template", "foreignObject", "desc", "title" ], l = c.concat([ "button" ]), u = [ "dd", "dt", "li", "option", "optgroup", "p", "rp", "rt" ], p = {
                 current: null,
@@ -8164,7 +8164,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(15), s = i(6), c = i(91);
+    const o = i(14), s = i(6), c = i(91);
     t.default = class extends s.default {
         constructor(e) {
             super(e), !0 === e.discardInitialElements || "discard" === e.discardInitialElements ? this.discardInitialElements = "discard" : !1 === e.discardInitialElements || "do-not-discard" === e.discardInitialElements ? this.discardInitialElements = "do-not-discard" : "discard-when-click-element-exists" === e.discardInitialElements ? this.discardInitialElements = "discard-when-click-element-exists" : this.discardInitialElements = "do-not-discard";
@@ -8443,7 +8443,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(15), s = i(6);
+    const o = i(14), s = i(6);
     t.default = class extends s.default {
         constructor(e) {
             super(e);
@@ -20267,7 +20267,18 @@
         getElementData(e, t) {
             return n(this, void 0, void 0, function*() {
                 const i = yield e.getAttr("content"), n = yield e.getTagName();
-                return i ? i.trim() : "image" === t ? (yield e.getNativeAttr("src")).trim() : "a" === n || "link" === n ? (yield e.getNativeAttr("href")).trim() : (yield e.getText()).trim();
+                if (i) return i.trim();
+                if ("image" === t) {
+                    const t = yield e.getNativeAttr("src");
+                    if (t) return t.trim();
+                    const i = yield e.getNativeAttr("href");
+                    return i ? i.trim() : "";
+                }
+                if ("a" === n || "link" === n) {
+                    const t = yield e.getNativeAttr("href");
+                    return t ? t.trim() : "";
+                }
+                return (yield e.getText()).trim();
             });
         }
         getDirectChildElements(e, t, i) {
@@ -21798,7 +21809,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(14), a = {
+        var n = i(15), a = {
             listen: function(e, t, i) {
                 return e.addEventListener ? (e.addEventListener(t, i, !1), {
                     remove: function() {
@@ -22114,7 +22125,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(14), a = i(1), r = i(2), o = i(87), s = i(198);
+        var n = i(15), a = i(1), r = i(2), o = i(87), s = i(198);
         e.exports = function(e, i) {
             var c = "function" == typeof Symbol && Symbol.iterator, l = "@@iterator";
             var u = "<<anonymous>>", p = {
@@ -24438,7 +24449,7 @@
     }.call(t, i(20));
 }, function(e, t, i) {
     "use strict";
-    var n = i(190), a = i(26), r = i(14), o = i(191), s = n.twoArgumentPooler, c = n.fourArgumentPooler, l = /\/+/g;
+    var n = i(190), a = i(26), r = i(15), o = i(191), s = n.twoArgumentPooler, c = n.fourArgumentPooler, l = /\/+/g;
     function u(e) {
         return ("" + e).replace(l, "$&/");
     }
@@ -25870,7 +25881,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(4), a = i(36), r = i(11), o = i(223), s = i(14), c = i(1), l = {
+        var n = i(4), a = i(36), r = i(11), o = i(223), s = i(15), c = i(1), l = {
             dangerouslyReplaceNodeWithMarkup: function(e, i) {
                 if (r.canUseDOM || ("production" !== t.env.NODE_ENV ? c(!1, "dangerouslyReplaceNodeWithMarkup(...): Cannot render markup in a worker thread. Make sure `window` and `document` are available globally before requiring React when unit testing or use ReactDOMServer.renderToString() for server rendering.") : n("56")), 
                 i || ("production" !== t.env.NODE_ENV ? c(!1, "dangerouslyReplaceNodeWithMarkup(...): Missing markup.") : n("57")), 
@@ -25966,7 +25977,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(4), a = i(8), r = i(228), o = i(229), s = i(36), c = i(69), l = i(25), u = i(164), p = i(44), d = i(51), f = i(56), m = i(152), g = i(9), h = i(239), y = i(240), v = i(166), b = i(241), A = i(13), C = i(242), x = i(251), O = i(14), E = i(55), S = i(1), w = i(66), P = i(73), D = i(158), T = i(77), N = i(2), k = m, _ = p.deleteListener, F = g.getNodeFromInstance, R = f.listenTo, I = d.registrationNameModules, M = {
+        var n = i(4), a = i(8), r = i(228), o = i(229), s = i(36), c = i(69), l = i(25), u = i(164), p = i(44), d = i(51), f = i(56), m = i(152), g = i(9), h = i(239), y = i(240), v = i(166), b = i(241), A = i(13), C = i(242), x = i(251), O = i(15), E = i(55), S = i(1), w = i(66), P = i(73), D = i(158), T = i(77), N = i(2), k = m, _ = p.deleteListener, F = g.getNodeFromInstance, R = f.listenTo, I = d.registrationNameModules, M = {
             string: !0,
             number: !0
         }, L = "__html", j = {
@@ -26732,7 +26743,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(4), a = i(72), r = i(46), o = i(13), s = i(16), c = i(35), l = i(243), u = i(14), p = i(250), d = i(1);
+        var n = i(4), a = i(72), r = i(46), o = i(13), s = i(16), c = i(35), l = i(243), u = i(15), p = i(250), d = i(1);
         function f(e, t) {
             return t && (e = e || []).push(t), e;
         }
@@ -27460,7 +27471,7 @@
     }).call(t, i(0));
 }, function(e, t, i) {
     "use strict";
-    var n = i(8), a = i(17), r = i(52), o = i(14), s = {
+    var n = i(8), a = i(17), r = i(52), o = i(15), s = {
         initialize: o,
         close: function() {
             p.isBatchingUpdates = !1;
@@ -28063,7 +28074,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(4), a = i(172), r = i(43), o = i(9), s = i(269), c = i(270), l = i(22), u = i(271), p = i(272), d = i(53), f = i(274), m = i(275), g = i(276), h = i(45), y = i(277), v = i(14), b = i(78), A = i(1), C = {}, x = {};
+        var n = i(4), a = i(172), r = i(43), o = i(9), s = i(269), c = i(270), l = i(22), u = i(271), p = i(272), d = i(53), f = i(274), m = i(275), g = i(276), h = i(45), y = i(277), v = i(15), b = i(78), A = i(1), C = {}, x = {};
         [ "abort", "animationEnd", "animationIteration", "animationStart", "blur", "canPlay", "canPlayThrough", "click", "contextMenu", "copy", "cut", "doubleClick", "drag", "dragEnd", "dragEnter", "dragExit", "dragLeave", "dragOver", "dragStart", "drop", "durationChange", "emptied", "encrypted", "ended", "error", "focus", "input", "invalid", "keyDown", "keyPress", "keyUp", "load", "loadedData", "loadedMetadata", "loadStart", "mouseDown", "mouseMove", "mouseOut", "mouseOver", "mouseUp", "paste", "pause", "play", "playing", "progress", "rateChange", "reset", "scroll", "seeked", "seeking", "stalled", "submit", "suspend", "timeUpdate", "touchCancel", "touchEnd", "touchMove", "touchStart", "transitionEnd", "volumeChange", "waiting", "wheel" ].forEach(function(e) {
             var t = e[0].toUpperCase() + e.slice(1), i = "on" + t, n = "top" + t, a = {
                 phasedRegistrationNames: {
@@ -34136,7 +34147,7 @@
     }, t.a = p;
 }, function(e, t, i) {
     "use strict";
-    var n = i(14), a = i(1), r = i(87);
+    var n = i(15), a = i(1), r = i(87);
     e.exports = function() {
         function e(e, t, i, n, o, s) {
             s !== r && a(!1, "Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types");
@@ -44887,7 +44898,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(21), s = i(7), c = i(15), l = i(31), u = i(28);
+    const o = i(21), s = i(7), c = i(14), l = i(31), u = i(28);
     let p = class extends u.default {
         constructor() {
             super(), this.state = {

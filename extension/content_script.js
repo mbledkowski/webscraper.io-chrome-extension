@@ -213,7 +213,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const s = i(15);
+    const s = i(14);
     t.default = class {
         constructor(e) {
             this.updateData(e);
@@ -465,14 +465,14 @@
             i.scrapingJobId = this.scrapingJobId, "ERROR" === e || "WARNING" === e ? console.error(JSON.stringify(i)) : console.log(JSON.stringify(i));
         }
         error(e, t = {}) {
-            t.stack = new Error().stack, this.log("ERROR", e, t);
+            t.stack || (t.stack = new Error().stack), this.log("ERROR", e, t);
         }
         info(e, t = {}) {
             this.log("INFO", e, t);
         }
         debug(e, t = {}) {}
         warning(e, t = {}) {
-            t.stack = new Error().stack, this.log("WARNING", e, t);
+            t.stack || (t.stack = new Error().stack), this.log("WARNING", e, t);
         }
         notice(e, t = {}) {
             this.log("NOTICE", e, t);
@@ -491,7 +491,7 @@
         }
     }
     t.default = new n({});
-}, , , , , function(e, t, i) {
+}, , , , function(e, t, i) {
     "use strict";
     var a = this && this.__awaiter || function(e, t, i, a) {
         return new (i || (i = Promise))(function(n, r) {
@@ -559,7 +559,7 @@
         }
     }
     t.default = r;
-}, , , function(e, t, i) {
+}, , , , function(e, t, i) {
     "use strict";
     function a(e) {
         return void 0 === e || null === e;
@@ -5359,7 +5359,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(15), s = i(6), c = i(91);
+    const o = i(14), s = i(6), c = i(91);
     t.default = class extends s.default {
         constructor(e) {
             super(e), !0 === e.discardInitialElements || "discard" === e.discardInitialElements ? this.discardInitialElements = "discard" : !1 === e.discardInitialElements || "do-not-discard" === e.discardInitialElements ? this.discardInitialElements = "do-not-discard" : "discard-when-click-element-exists" === e.discardInitialElements ? this.discardInitialElements = "discard-when-click-element-exists" : this.discardInitialElements = "do-not-discard";
@@ -5638,7 +5638,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const o = i(15), s = i(6);
+    const o = i(14), s = i(6);
     t.default = class extends s.default {
         constructor(e) {
             super(e);
@@ -17462,7 +17462,18 @@
         getElementData(e, t) {
             return a(this, void 0, void 0, function*() {
                 const i = yield e.getAttr("content"), a = yield e.getTagName();
-                return i ? i.trim() : "image" === t ? (yield e.getNativeAttr("src")).trim() : "a" === a || "link" === a ? (yield e.getNativeAttr("href")).trim() : (yield e.getText()).trim();
+                if (i) return i.trim();
+                if ("image" === t) {
+                    const t = yield e.getNativeAttr("src");
+                    if (t) return t.trim();
+                    const i = yield e.getNativeAttr("href");
+                    return i ? i.trim() : "";
+                }
+                if ("a" === a || "link" === a) {
+                    const t = yield e.getNativeAttr("href");
+                    return t ? t.trim() : "";
+                }
+                return (yield e.getText()).trim();
             });
         }
         getDirectChildElements(e, t, i) {
@@ -18195,7 +18206,7 @@
     const a = i(10);
     t.default = class {
         static isContentTypeUnknown(e) {
-            return !!e && !e.match(/^(text\/.*|xml|application\/xml.*|application\/json.*|application\/(java|ecma|type)script.*|application\/html.*)$/) && (a.default.notice("unknown content type loaded", {
+            return !!e && !(e = e.toLocaleLowerCase()).match(/^(text\/[^\n]*?|[^\n]*?(html|xml|json)[^\n]*?|application\/[^\n]*?(java|ecma|type)script[^\n]*?)$/) && (a.default.notice("unknown content type loaded", {
                 contentType: e
             }), !0);
         }
@@ -18362,7 +18373,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         });
-        const $ = __webpack_require__(30), pako = __webpack_require__(422), Async_1 = __webpack_require__(15), ContentSelector_1 = __webpack_require__(431), ContentTypeParser_1 = __webpack_require__(185), Log_1 = __webpack_require__(10), BackgroundPageClient_1 = __webpack_require__(31);
+        const $ = __webpack_require__(30), pako = __webpack_require__(422), Async_1 = __webpack_require__(14), ContentSelector_1 = __webpack_require__(431), ContentTypeParser_1 = __webpack_require__(185), Log_1 = __webpack_require__(10), BackgroundPageClient_1 = __webpack_require__(31);
         class ContentScript {
             constructor() {
                 this.contentSelector = null, this.elementReferences = [], this.autoDataExtractorEventsInitialized = !1, 
