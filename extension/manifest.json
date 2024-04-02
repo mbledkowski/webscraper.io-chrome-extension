@@ -1,10 +1,10 @@
 {
 	"manifest_version": 3,
-	"version":"1.72.7",
+	"version": "1.75.7", 
 	"name": "Web Scraper - Free Web Scraping",
 	"short_name": "Web Scraper",
 	"description": "Web data extraction tool with an easy point-and-click interface for modern web",
-	"permissions": ["tabs", "notifications", "storage", "unlimitedStorage"],
+	"permissions": ["tabs", "notifications", "storage", "unlimitedStorage", "declarativeNetRequest"],
 	"optional_permissions": ["webRequest"],
 	"icons": {
 		"16": "images/icon16.png",
