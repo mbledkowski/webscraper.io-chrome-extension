@@ -24,7 +24,7 @@
         return i.d(t, "a", t), t;
     }, i.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t);
-    }, i.p = "", i(i.s = 420);
+    }, i.p = "", i(i.s = 422);
 }([ function(e, t) {
     var i, a, n = e.exports = {};
     function r() {
@@ -3816,11 +3816,13 @@
         getScraperSettings(e) {
             const t = {
                 failOnErrorPages: !0,
-                enableImagesInHosts: []
+                enableImagesInHosts: [],
+                captchaCssSelector: "",
+                solveCaptcha: null
             };
             let i;
             if (i = t, void 0 !== this.scraperSettings && (i = this.scraperSettings), void 0 !== e) for (const a in t) void 0 !== e[a] && (i[a] = e[a]);
-            return i;
+            return null === i.solveCaptcha && delete i.solveCaptcha, i;
         }
         getAllSelectors(e) {
             return this.selectors.getAllSelectors(e);
@@ -5661,7 +5663,10 @@
         scrollToBottom(e, t = !1) {
             return a(this, void 0, void 0, function*() {
                 const i = e.element;
-                this.scrollElementSelector ? yield e.scrollDown(this.scrollElementSelector, i, this.selector) : yield e.scrollDownBody(i, this.selector, t);
+                if (this.scrollElementSelector) {
+                    const a = yield e.getElement(this.scrollElementSelector);
+                    yield e.scrollDownElement(i, this.selector, t, a.element);
+                } else yield e.scrollDownBody(i, this.selector, t);
             });
         }
         scrollToTop(e) {
@@ -18224,7 +18229,80 @@
         "-5": "buffer error",
         "-6": "incompatible version"
     };
-}, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , function(e, t, i) {
+}, function(e, t, i) {
+    "use strict";
+    Object.defineProperty(t, "__esModule", {
+        value: !0
+    });
+    const a = i(30);
+    let n = null;
+    class r {
+        static find(e, t) {
+            return null === n && (n = new r(a)), n.find(e, t);
+        }
+        constructor(e) {
+            this.jQuery = e || a;
+        }
+        find(e, t) {
+            if (e = e || "", !this.selectorNeedsSpecialHandling(e)) {
+                return this.jQuery(e, t).get();
+            }
+            const i = [], a = this.getSelectorParts(e, [ "," ]);
+            for (const n of a) {
+                if ("_parent_" === n) {
+                    this.addElementToList(t, i);
+                    continue;
+                }
+                if (!this.selectorNeedsSplitExtractionHandling(n)) {
+                    const e = this.jQuery(n, t).get();
+                    this.addElementsToList(e, i);
+                    continue;
+                }
+                const a = this.extractElementsWithSplitExtractionSelector(e, t);
+                this.addElementsToList(a, i);
+            }
+            return i;
+        }
+        extractElementsWithSplitExtractionSelector(e, t) {
+            let i = [ t ];
+            const a = this.getSelectorParts(e, [ ":shadow-root", ":iframe" ], !0);
+            for (const e of a) if (":shadow-root" === e) {
+                const e = [];
+                for (const t of i) t.shadowRoot && e.push(t.shadowRoot);
+                i = e;
+            } else if (":iframe" === e) {
+                const e = [];
+                for (const t of i) t.contentDocument && e.push(t.contentDocument);
+                i = e;
+            } else i = this.jQuery(e, i).get();
+            return i;
+        }
+        selectorNeedsSpecialHandling(e) {
+            const t = e.split(/(_parent_|:shadow-root|:iframe|".*?"|'.*?'|\(.*?\))/);
+            for (const e of t) if ("_parent_" === e || ":shadow-root" === e || ":iframe" === e) return !0;
+            return !1;
+        }
+        selectorNeedsSplitExtractionHandling(e) {
+            const t = e.split(/(:shadow-root|:iframe|".*?"|'.*?'|\(.*?\))/);
+            for (const e of t) if (":shadow-root" === e || ":iframe" === e) return !0;
+            return !1;
+        }
+        getSelectorParts(e, t, i = !1) {
+            const a = new RegExp("(" + t.join("|") + "|\".*?\"|'.*?'|\\(.*?\\))"), n = e.split(a), r = [];
+            let o = "";
+            for (const e of n) t.includes(e) ? (o.trim().length && r.push(o.trim()), i && r.push(e), 
+            o = "") : o += e;
+            return o.trim().length && r.push(o.trim()), r;
+        }
+        addElementToList(e, t) {
+            -1 === t.indexOf(e) && t.push(e);
+        }
+        addElementsToList(e, t) {
+            for (const i of e) this.addElementToList(i, t);
+        }
+    }
+    t.default = r;
+}, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , function(e, t, i) {
     "use strict";
     e.exports = function(e, t, i, a) {
         for (var n = 65535 & e | 0, r = e >>> 16 & 65535 | 0, o = 0; 0 !== i; ) {
@@ -18342,7 +18420,7 @@
     "use strict";
     Object.defineProperty(t, "__esModule", {
         value: !0
-    }), new (i(421).default)().init();
+    }), new (i(423).default)().init();
 }, function(module, exports, __webpack_require__) {
     "use strict";
     (function(Buffer) {
@@ -18373,7 +18451,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         });
-        const $ = __webpack_require__(30), pako = __webpack_require__(422), Async_1 = __webpack_require__(14), ContentSelector_1 = __webpack_require__(431), ContentTypeParser_1 = __webpack_require__(185), Log_1 = __webpack_require__(10), BackgroundPageClient_1 = __webpack_require__(31);
+        const $ = __webpack_require__(30), pako = __webpack_require__(424), Async_1 = __webpack_require__(14), ContentSelector_1 = __webpack_require__(433), ContentTypeParser_1 = __webpack_require__(185), Log_1 = __webpack_require__(10), BackgroundPageClient_1 = __webpack_require__(31), ElementQuery2_1 = __webpack_require__(187), ScrollDown_1 = __webpack_require__(434);
         class ContentScript {
             constructor() {
                 this.contentSelector = null, this.elementReferences = [], this.autoDataExtractorEventsInitialized = !1, 
@@ -18399,8 +18477,8 @@
                     let i;
                     if (void 0 !== t && null !== t) {
                         const a = this.getElementByReference(t);
-                        i = $(e, a).get();
-                    } else i = $(e).get();
+                        i = ElementQuery2_1.default.find(e, a);
+                    } else i = ElementQuery2_1.default.find(e);
                     return i.map(e => (e.isConnected, this.getElementReference(e)));
                 });
             }
@@ -18689,30 +18767,38 @@
                 const t = $(e);
                 t.length ? t[0].click() : console.log("couldn't find click element");
             }
-            scrollDown(e, t, i, a) {
+            scrollDownElement(e, t, i = !1, a) {
                 return __awaiter(this, void 0, void 0, function*() {
-                    const i = this.getElementByReference(e), a = $(t, i).get();
-                    if (0 === a.length) ; else for (const e of a) e.scrollTop = e.scrollHeight - e.clientHeight;
+                    const n = this.getElementByReference(a);
+                    if (!0 !== i) {
+                        const i = this.getElementByReference(e);
+                        yield ScrollDown_1.default.scrollToBottomElement(i, t, n);
+                    } else {
+                        const e = ScrollDown_1.default.getWrapperElementScrollBottomPosition(n);
+                        yield ScrollDown_1.default.scrollToY(e, n);
+                    }
+                });
+            }
+            scrollElementToTop(e) {
+                return __awaiter(this, void 0, void 0, function*() {
+                    const t = this.getElementByReference(e);
+                    yield ScrollDown_1.default.scrollElementToTop(t);
                 });
             }
             srcollBodyToTop() {
                 return __awaiter(this, void 0, void 0, function*() {
-                    0 !== window.pageYOffset && (yield this.scrollToY(0));
+                    yield ScrollDown_1.default.scrollElementToTop(window);
                 });
             }
             scrollDownBody(e, t, i = !1) {
                 return __awaiter(this, void 0, void 0, function*() {
-                    const a = this.getElementByReference(e);
-                    let n = 0;
-                    const r = $(t, a).get();
-                    if (0 === r.length || !0 === i) n = document.body.scrollHeight - window.innerHeight + 500; else {
-                        for (const e of r) {
-                            const t = e.getBoundingClientRect().bottom + window.pageYOffset;
-                            n < t && (n = t);
-                        }
-                        n = n - window.innerHeight + 200;
+                    if (!0 !== i) {
+                        const i = this.getElementByReference(e);
+                        yield ScrollDown_1.default.scrollToBottomElement(i, t, window);
+                    } else {
+                        const e = ScrollDown_1.default.getWrapperElementScrollBottomPosition(window);
+                        yield ScrollDown_1.default.scrollToY(e, window);
                     }
-                    yield this.scrollToY(n);
                 });
             }
             waitForPageLoad() {
@@ -18794,25 +18880,18 @@
                         }).catch(e => {
                             a = {
                                 success: !1,
-                                error: e.toString()
+                                error: e.toString(),
+                                stack: e.stack
                             }, i(a);
                         });
                     } catch (e) {
                         a = {
                             success: !1,
-                            error: e.toString()
+                            error: e.toString(),
+                            stack: e.stack
                         }, i(a);
                     }
                     return !0;
-                });
-            }
-            scrollToY(e) {
-                return new Promise((t, i) => {
-                    const a = window.pageYOffset, n = 2e3, r = .5 * (a + e), o = a - r, s = performance.now();
-                    window.requestAnimationFrame(function e() {
-                        let i = (performance.now() - s) / n;
-                        i > 1 && (i = 1), window.scrollTo(0, r + o * Math.cos(i * Math.PI)), i < 1 ? window.requestAnimationFrame(e) : t();
-                    });
                 });
             }
             initAutoDataExtractorEventListener() {
@@ -18837,10 +18916,10 @@
 }, function(e, t, i) {
     "use strict";
     var a = {};
-    (0, i(60).assign)(a, i(423), i(426), i(326)), e.exports = a;
+    (0, i(60).assign)(a, i(425), i(428), i(328)), e.exports = a;
 }, function(e, t, i) {
     "use strict";
-    var a = i(424), n = i(60), r = i(324), o = i(186), s = i(325), c = Object.prototype.toString, l = 0, p = -1, u = 0, d = 8;
+    var a = i(426), n = i(60), r = i(326), o = i(186), s = i(327), c = Object.prototype.toString, l = 0, p = -1, u = 0, d = 8;
     function m(e) {
         if (!(this instanceof m)) return new m(e);
         this.options = n.assign({
@@ -18894,7 +18973,7 @@
     };
 }, function(e, t, i) {
     "use strict";
-    var a, n = i(60), r = i(425), o = i(322), s = i(323), c = i(186), l = 0, p = 1, u = 3, d = 4, m = 5, g = 0, f = 1, h = -2, y = -3, b = -5, v = -1, A = 1, C = 2, P = 3, O = 4, x = 0, S = 2, w = 8, D = 9, T = 15, E = 8, k = 286, F = 30, N = 19, R = 2 * k + 1, I = 15, _ = 3, L = 258, M = L + _ + 1, B = 32, j = 42, H = 69, z = 73, U = 91, V = 103, W = 113, q = 666, J = 1, G = 2, X = 3, Y = 4, K = 3;
+    var a, n = i(60), r = i(427), o = i(324), s = i(325), c = i(186), l = 0, p = 1, u = 3, d = 4, m = 5, g = 0, f = 1, h = -2, y = -3, b = -5, v = -1, A = 1, C = 2, P = 3, O = 4, x = 0, S = 2, w = 8, D = 9, T = 15, E = 8, k = 286, F = 30, N = 19, R = 2 * k + 1, I = 15, _ = 3, L = 258, M = L + _ + 1, B = 32, j = 42, H = 69, z = 73, U = 91, V = 103, W = 113, q = 666, J = 1, G = 2, X = 3, Y = 4, K = 3;
     function Q(e, t) {
         return e.msg = c[t], t;
     }
@@ -19390,7 +19469,7 @@
     };
 }, function(e, t, i) {
     "use strict";
-    var a = i(427), n = i(60), r = i(324), o = i(326), s = i(186), c = i(325), l = i(430), p = Object.prototype.toString;
+    var a = i(429), n = i(60), r = i(326), o = i(328), s = i(186), c = i(327), l = i(432), p = Object.prototype.toString;
     function u(e) {
         if (!(this instanceof u)) return new u(e);
         this.options = n.assign({
@@ -19442,7 +19521,7 @@
     }, t.ungzip = d;
 }, function(e, t, i) {
     "use strict";
-    var a = i(60), n = i(322), r = i(323), o = i(428), s = i(429), c = 0, l = 1, p = 2, u = 4, d = 5, m = 6, g = 0, f = 1, h = 2, y = -2, b = -3, v = -4, A = -5, C = 8, P = 1, O = 2, x = 3, S = 4, w = 5, D = 6, T = 7, E = 8, k = 9, F = 10, N = 11, R = 12, I = 13, _ = 14, L = 15, M = 16, B = 17, j = 18, H = 19, z = 20, U = 21, V = 22, W = 23, q = 24, J = 25, G = 26, X = 27, Y = 28, K = 29, Q = 30, $ = 31, Z = 32, ee = 852, te = 592, ie = 15;
+    var a = i(60), n = i(324), r = i(325), o = i(430), s = i(431), c = 0, l = 1, p = 2, u = 4, d = 5, m = 6, g = 0, f = 1, h = 2, y = -2, b = -3, v = -4, A = -5, C = 8, P = 1, O = 2, x = 3, S = 4, w = 5, D = 6, T = 7, E = 8, k = 9, F = 10, N = 11, R = 12, I = 13, _ = 14, L = 15, M = 16, B = 17, j = 18, H = 19, z = 20, U = 21, V = 22, W = 23, q = 24, J = 25, G = 26, X = 27, Y = 28, K = 29, Q = 30, $ = 31, Z = 32, ee = 852, te = 592, ie = 15;
     function ae(e) {
         return (e >>> 24 & 255) + (e >>> 8 & 65280) + ((65280 & e) << 8) + ((255 & e) << 24);
     }
@@ -20116,7 +20195,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const n = i(30), r = i(84), o = i(432);
+    const n = i(30), r = i(84), o = i(187);
     t.default = class {
         constructor(e) {
             if (this.allowedElements = e.allowedElements || "", this.parentCSSSelector = e.parentCSSSelector.trim(), 
@@ -20158,7 +20237,7 @@
         }
         elementPreview(e) {
             return a(this, void 0, void 0, function*() {
-                this.highlightParent(), n(o.default(e, this.parent)).addClass("-sitemap-select-item-selected");
+                this.highlightParent(), n(o.default.find(e, this.parent)).addClass("-sitemap-select-item-selected");
             });
         }
         initGUI() {
@@ -20226,7 +20305,7 @@
             try {
                 const e = this.getCurrentCSSSelector();
                 n("body #-selector-toolbar .selector").text(e), n(".-sitemap-select-item-selected").removeClass("-sitemap-select-item-selected"), 
-                n(o.default(e, this.parent)).addClass("-sitemap-select-item-selected");
+                n(o.default.find(e, this.parent)).addClass("-sitemap-select-item-selected");
             } catch (e) {
                 "found multiple element groups, but allowMultipleSelectors disabled" === e && (console.log("multiple different element selection disabled"), 
                 this.showMultipleGroupPopup(), this.selectedElements.pop(), this.highlightSelectedElements());
@@ -20291,27 +20370,82 @@
     };
 }, function(e, t, i) {
     "use strict";
+    var a = this && this.__awaiter || function(e, t, i, a) {
+        return new (i || (i = Promise))(function(n, r) {
+            function o(e) {
+                try {
+                    c(a.next(e));
+                } catch (e) {
+                    r(e);
+                }
+            }
+            function s(e) {
+                try {
+                    c(a.throw(e));
+                } catch (e) {
+                    r(e);
+                }
+            }
+            function c(e) {
+                e.done ? n(e.value) : new i(function(t) {
+                    t(e.value);
+                }).then(o, s);
+            }
+            c((a = a.apply(e, t || [])).next());
+        });
+    };
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(30);
-    t.getSelectorParts = (e => {
-        const t = [];
-        let i = "";
-        return e.split(/(,|".*?"|'.*?'|\(.*?\))/).forEach(e => {
-            "," === e ? (i.trim().length && t.push(i.trim()), i = "") : i += e;
-        }), i.trim().length && t.push(i.trim()), t;
-    }), t.default = ((e, i) => {
-        e = e || "";
-        const n = [], r = e => {
-            -1 === n.indexOf(e) && n.push(e);
-        };
-        return t.getSelectorParts(e).forEach(e => {
-            "_parent_" === e ? a(i).each((e, t) => {
-                r(t);
-            }) : a(e, i).each((e, t) => {
-                r(t);
+    const n = i(187);
+    class r {
+        static scrollElementToTop(e) {
+            return a(this, void 0, void 0, function*() {
+                0 !== r.getElementScrollYPosition(e) && (yield r.scrollToY(0, e));
             });
-        }), n;
-    });
+        }
+        static getElementScrollYPosition(e) {
+            return e === window ? window.pageYOffset : e.scrollTop;
+        }
+        static scrollToY(e, t) {
+            return new Promise((i, a) => {
+                const n = r.getElementScrollYPosition(t), o = 2e3, s = .5 * (n + e), c = n - s, l = performance.now();
+                window.requestAnimationFrame(function e() {
+                    let a = (performance.now() - l) / o;
+                    a > 1 && (a = 1), t.scrollTo(0, s + c * Math.cos(a * Math.PI)), a < 1 ? window.requestAnimationFrame(e) : i();
+                });
+            });
+        }
+        static scrollToBottomElement(e, t, i) {
+            return a(this, void 0, void 0, function*() {
+                let a = 0;
+                const o = n.default.find(t, e);
+                if (0 === o.length) a = r.getWrapperElementScrollBottomPosition(i); else {
+                    for (const e of o) {
+                        const t = r.getElementBottomPosition(e, i);
+                        a < t && (a = t);
+                    }
+                    a = a - r.getWrapperElementVisibleHeight(i) + 200;
+                }
+                yield r.scrollToY(a, i);
+            });
+        }
+        static getWrapperElementScrollBottomPosition(e) {
+            if (e === window) {
+                return document.body.scrollHeight - window.innerHeight + 500;
+            }
+            return e.scrollHeight - e.clientHeight;
+        }
+        static getElementBottomPosition(e, t) {
+            const i = e.getBoundingClientRect();
+            if (t === window) {
+                return i.bottom + window.pageYOffset;
+            }
+            return e.getBoundingClientRect().bottom - t.getBoundingClientRect().top + t.scrollTop;
+        }
+        static getWrapperElementVisibleHeight(e) {
+            return e === window ? window.innerHeight : e.offsetHeight;
+        }
+    }
+    t.default = r;
 } ]);

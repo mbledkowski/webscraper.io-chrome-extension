@@ -24,9 +24,10 @@
         return t.d(r, "a", r), r;
     }, t.o = function(e, r) {
         return Object.prototype.hasOwnProperty.call(e, r);
-    }, t.p = "", t(t.s = 570);
+    }, t.p = "", t(t.s = 572);
 }({
-    570: function(e, r) {
-        navigator.platform.indexOf("Linux") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("linux") : navigator.platform.indexOf("Mac") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("mac") : navigator.platform.indexOf("Win") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("windows") : document.querySelectorAll(".open-web-scraper")[0].classList.add("other");
+    572: function(e, r) {
+        navigator.platform.indexOf("Linux") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("linux") : navigator.platform.indexOf("Mac") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("mac") : navigator.platform.indexOf("Win") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("windows") : document.querySelectorAll(".open-web-scraper")[0].classList.add("other"), 
+        1 === Math.round(Math.random()) ? document.querySelector(".btn-primary.test-a").classList.remove("hide") : document.querySelector(".btn-primary.test-b").classList.remove("hide");
     }
 });

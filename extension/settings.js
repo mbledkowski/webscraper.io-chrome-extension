@@ -24,9 +24,9 @@
         return t.d(n, "a", n), n;
     }, t.o = function(e, n) {
         return Object.prototype.hasOwnProperty.call(e, n);
-    }, t.p = "", t(t.s = 569);
+    }, t.p = "", t(t.s = 571);
 }({
-    569: function(e, n) {
+    571: function(e, n) {
         document.getElementById("enable-experimental-features").onclick = (() => {
             chrome.runtime.sendMessage({
                 method: "setExperimentalFeaturesEnabled",

@@ -24,9 +24,9 @@
         return n.d(r, "a", r), r;
     }, n.o = function(e, r) {
         return Object.prototype.hasOwnProperty.call(e, r);
-    }, n.p = "", n(n.s = 566);
+    }, n.p = "", n(n.s = 568);
 }({
-    566: function(e, r) {
+    568: function(e, r) {
         chrome.devtools.panels.create("Web Scraper", "images/icon48.png", "devtools_web_scraper_panel.html");
     }
 });

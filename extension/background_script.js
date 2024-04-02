@@ -24,7 +24,7 @@
         return i.d(t, "a", t), t;
     }, i.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t);
-    }, i.p = "", i(i.s = 344);
+    }, i.p = "", i(i.s = 346);
 }([ function(e, t) {
     var i, n, a = e.exports = {};
     function r() {
@@ -3537,7 +3537,7 @@
     t.default = class {};
 }, function(e, t, i) {
     "use strict";
-    var n = i(315), a = i(380), r = Object.prototype.toString;
+    var n = i(317), a = i(382), r = Object.prototype.toString;
     function o(e) {
         return "[object Array]" === r.call(e);
     }
@@ -3710,11 +3710,13 @@
         getScraperSettings(e) {
             const t = {
                 failOnErrorPages: !0,
-                enableImagesInHosts: []
+                enableImagesInHosts: [],
+                captchaCssSelector: "",
+                solveCaptcha: null
             };
             let i;
             if (i = t, void 0 !== this.scraperSettings && (i = this.scraperSettings), void 0 !== e) for (const n in t) void 0 !== e[n] && (i[n] = e[n]);
-            return i;
+            return null === i.solveCaptcha && delete i.solveCaptcha, i;
         }
         getAllSelectors(e) {
             return this.selectors.getAllSelectors(e);
@@ -5514,7 +5516,10 @@
         scrollToBottom(e, t = !1) {
             return n(this, void 0, void 0, function*() {
                 const i = e.element;
-                this.scrollElementSelector ? yield e.scrollDown(this.scrollElementSelector, i, this.selector) : yield e.scrollDownBody(i, this.selector, t);
+                if (this.scrollElementSelector) {
+                    const n = yield e.getElement(this.scrollElementSelector);
+                    yield e.scrollDownElement(i, this.selector, t, n.element);
+                } else yield e.scrollDownBody(i, this.selector, t);
             });
         }
         scrollToTop(e) {
@@ -18118,7 +18123,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(38), a = i(382), r = {
+        var n = i(38), a = i(384), r = {
             "Content-Type": "application/x-www-form-urlencoded"
         };
         function o(e, t) {
@@ -18127,7 +18132,7 @@
         var s = {
             adapter: function() {
                 var e;
-                return "undefined" != typeof XMLHttpRequest ? e = i(316) : void 0 !== t && (e = i(316)), 
+                return "undefined" != typeof XMLHttpRequest ? e = i(318) : void 0 !== t && (e = i(318)), 
                 e;
             }(),
             transformRequest: [ function(e, t) {
@@ -18172,7 +18177,7 @@
             }), !0);
         }
     };
-}, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , function(e, t, i) {
+}, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , function(e, t, i) {
     "use strict";
     var n = this && this.__awaiter || function(e, t, i, n) {
         return new (i || (i = Promise))(function(a, r) {
@@ -18318,25 +18323,11 @@
         constructor(e) {
             void 0 !== e.parentJob ? this.url = this.combineUrls(e.parentJob.url, e.url) : this.url = e.url, 
             void 0 !== e._id && (this._id = e._id), void 0 !== e._rev && (this._rev = e._rev), 
-            this.parentSelector = e.parentSelector, this.baseData = e.baseData || {}, this.executed = e.executed || !1;
-        }
-        getUrlParts(e) {
-            const t = new RegExp("(https?://)?([a-z0-9\\-\\.]+\\.[a-z]+(:\\d+)?(?=\\/|$)|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(:\\d+)?(?=\\/|$))?(\\/[^\\?]*\\/|\\/)?([^\\?]*)?(\\?.*)?", "i"), i = e.match(t), n = {
-                scheme: i[1] || "",
-                host: i[2] || "",
-                dir: i[5] || "",
-                path: i[6] || "",
-                query: i[7] || ""
-            };
-            return n.scheme || !n.host || n.dir || n.path || (n.path = n.host, n.host = ""), 
-            n;
+            this.parentSelector = e.parentSelector, this.baseData = e.baseData || {}, this.executed = e.executed || !1, 
+            e.failed_retries && (this.failed_retries = e.failed_retries), e.empty_retries && (this.empty_retries = e.empty_retries);
         }
         combineUrls(e, t) {
-            const i = this.getUrlParts(e), n = this.getUrlParts(t);
-            return n.host && n.host !== i.host ? (n.scheme || (n.scheme = "http://"), n.dir || (n.dir = "/"), 
-            n.scheme + n.host + n.dir + n.path + n.query) : (n.scheme || (n.scheme = i.scheme), 
-            n.host || (n.host = i.host), n.dir || (n.dir = i.dir, n.path || (n.path = i.path, 
-            n.query || (n.query = i.query))), n.scheme + n.host + n.dir + n.path + n.query);
+            return new URL(t, e).toString();
         }
         recordCanHaveChildJobs(e, t) {
             if (void 0 === e._follow) return !1;
@@ -18351,6 +18342,28 @@
             this.newJobs = [], this.data = [];
         }
     };
+}, function(e, t, i) {
+    "use strict";
+    Object.defineProperty(t, "__esModule", {
+        value: !0
+    });
+    class n {
+        static getMessage(e) {
+            return "string" == typeof e ? e : e && "object" == typeof e && e.message && "string" == typeof e.message ? e.message : null === e || void 0 === e ? "missing error" : e.toString();
+        }
+        static startsWith(e, t) {
+            return "string" == typeof e ? e.startsWith(t) : !(!e || "object" != typeof e || !e.message || "string" != typeof e.message) && e.message.startsWith(t);
+        }
+        static startsWithAnyOf(e, t) {
+            for (const i of t) if (n.startsWith(e, i)) return !0;
+            return !1;
+        }
+        static includes(e, t) {
+            if (null === e || void 0 === e) return !1;
+            return n.getMessage(e).includes(t);
+        }
+    }
+    t.default = n;
 }, function(e, t, i) {
     "use strict";
     (function(t) {
@@ -18421,7 +18434,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(38), a = i(383), r = i(385), o = i(386), s = i(387), c = i(317), l = "undefined" != typeof window && window.btoa && window.btoa.bind(window) || i(388);
+        var n = i(38), a = i(385), r = i(387), o = i(388), s = i(389), c = i(319), l = "undefined" != typeof window && window.btoa && window.btoa.bind(window) || i(390);
         e.exports = function(e) {
             return new Promise(function(u, p) {
                 var d = e.data, m = e.headers;
@@ -18451,7 +18464,7 @@
                 }, g.ontimeout = function() {
                     p(c("timeout of " + e.timeout + "ms exceeded", e, "ECONNABORTED", g)), g = null;
                 }, n.isStandardBrowserEnv()) {
-                    var v = i(389), A = (e.withCredentials || s(e.url)) && e.xsrfCookieName ? v.read(e.xsrfCookieName) : void 0;
+                    var v = i(391), A = (e.withCredentials || s(e.url)) && e.xsrfCookieName ? v.read(e.xsrfCookieName) : void 0;
                     A && (m[e.xsrfHeaderName] = A);
                 }
                 if ("setRequestHeader" in g && n.forEach(m, function(e, t) {
@@ -18471,7 +18484,7 @@
     }).call(t, i(0));
 }, function(e, t, i) {
     "use strict";
-    var n = i(384);
+    var n = i(386);
     e.exports = function(e, t, i, a, r) {
         var o = new Error(e);
         return n(o, t, i, a, r);
@@ -18549,13 +18562,13 @@
             }), i.trim().length && t.push(i.trim()), t;
         }
     };
-    const a = i(321);
+    const a = i(323);
 }, function(e, t, i) {
     "use strict";
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const n = i(320);
+    const n = i(322);
     t.default = class extends n.default {
         constructor(e) {
             super(), this.element = e;
@@ -18565,7 +18578,7 @@
     "use strict";
     Object.defineProperty(t, "__esModule", {
         value: !0
-    }), new (i(345).default)().init();
+    }), new (i(347).default)().init();
 }, function(e, t, i) {
     "use strict";
     var n = this && this.__awaiter || function(e, t, i, n) {
@@ -18595,7 +18608,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(183), r = i(310), o = i(81), s = i(10), c = i(346), l = i(360), u = i(47), p = i(361), d = i(362), m = i(363), g = i(377), f = i(401), h = i(414), y = i(417), b = i(418), v = i(419);
+    const a = i(183), r = i(311), o = i(81), s = i(10), c = i(348), l = i(362), u = i(47), p = i(363), d = i(364), m = i(365), g = i(379), f = i(403), h = i(416), y = i(419), b = i(420), v = i(421);
     t.default = class {
         constructor() {
             this.experimentalFeaturesEnabled = !1;
@@ -18898,11 +18911,11 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const n = i(347), a = i(348), r = i(349), o = i(350), s = i(351), c = i(352), l = i(353), u = i(354), p = i(355), d = i(356), m = i(357), g = i(358), f = i(359);
-    t.default = class extends f.default {
+    const n = i(349), a = i(350), r = i(351), o = i(352), s = i(353), c = i(354), l = i(355), u = i(356), p = i(357), d = i(358), m = i(359), g = i(360), f = i(361);
+    t.default = class extends g.default {
         constructor(e) {
-            const t = e.webPage, i = e.sitemap, f = e.storage, h = e.stats;
-            super([ new d.default(h), new o.default(f), new c.default(), new s.default(t, i), new l.default(), new r.default(i), new p.default(), new u.default(t), new m.default(t), new n.default(t, i), new g.default(t, i), new a.default(t, i) ]);
+            const t = e.webPage, i = e.sitemap, g = e.storage, h = e.stats;
+            super([ new d.default(h), new o.default(g), new c.default(), new s.default(t, i), new l.default(), new r.default(i), new p.default(), new u.default(t), new f.default(t), new n.default(t, i), new m.default(t, i), new a.default(t, i) ]);
         }
     };
 }, function(e, t, i) {
@@ -19009,7 +19022,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(310), r = i(10), o = i(37);
+    const a = i(311), r = i(10), o = i(37);
     t.default = class extends o.default {
         constructor(e, t) {
             super(), this.webPage = e, this.sitemap = t;
@@ -19059,8 +19072,8 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(311), r = i(37);
-    let o = 0;
+    const a = i(312), r = i(37), o = i(10);
+    let s = 0;
     t.default = class extends r.default {
         constructor(e) {
             super(), this.sitemap = e;
@@ -19084,24 +19097,26 @@
             for (const r of e) {
                 for (const e in t) void 0 === r[e] && (r[e] = t[e]);
                 this.recordCanHaveChildJobs(r, n) || (delete r._follow, delete r._followSelectorId, 
-                r["web-scraper-order"] = i + "-" + ++o, a.push(r));
+                r["web-scraper-order"] = i + "-" + ++s, a.push(r));
             }
             return a;
         }
         extractNewJobs(e, t, i) {
             const n = this.sitemap, r = [];
-            for (const o of e) {
-                for (const e in t) void 0 === o[e] && (o[e] = t[e]);
-                if (this.recordCanHaveChildJobs(o, n)) {
-                    const e = o._follow, t = o._followSelectorId;
-                    if (delete o._follow, delete o._followSelectorId, !e) continue;
+            for (const s of e) {
+                for (const e in t) void 0 === s[e] && (s[e] = t[e]);
+                if (this.recordCanHaveChildJobs(s, n)) {
+                    const e = s._follow, t = s._followSelectorId;
+                    if (delete s._follow, delete s._followSelectorId, !e) continue;
                     const n = new a.default({
                         url: e,
                         parentSelector: t,
                         parentJob: i,
-                        baseData: o
+                        baseData: s
+                    }), c = new URL(n.url).protocol;
+                    "http:" === c || "https:" === c ? r.push(n) : o.default.notice("invalid New Job URL protocol", {
+                        url: n.url
                     });
-                    r.push(n);
                 }
             }
             return r;
@@ -19177,7 +19192,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(10), r = i(37);
+    const a = i(10), r = i(37), o = i(313);
     t.default = class extends r.default {
         constructor(e, t) {
             super(), this.webPage = e, this.sitemap = t;
@@ -19187,8 +19202,8 @@
                 try {
                     return yield t();
                 } catch (t) {
-                    if ("CHROME_WINDOW_CLOSED" === t.toString()) throw "CHROME_WINDOW_CLOSED";
-                    const i = this.sitemap, n = this.webPage, r = t.toString(), o = {
+                    if (o.default.startsWith(t, "CHROME_WINDOW_CLOSED")) throw "CHROME_WINDOW_CLOSED";
+                    const i = this.sitemap, n = this.webPage, r = o.default.getMessage(t), s = {
                         url: e.url,
                         parentSelector: e.parentSelector,
                         sitemapName: i._id,
@@ -19196,8 +19211,8 @@
                         error: r,
                         stack: t.stack
                     };
-                    r.startsWith("PAGE_STATUS_CODE_ERROR") ? a.default.notice("Job execution failed", o) : r.startsWith("PAGE_REQUEST_ERROR") ? a.default.notice("Job execution failed", o) : r.startsWith("PAGE_UNKNOWN_CONTENT_TYPE_ERROR") ? a.default.notice("Job execution failed", o) : r.includes("tabStatusLoadedPromise") ? a.default.notice("Job execution failed", o) : r.includes("tabNetworkStatusLoadedPromise") ? a.default.notice("Job execution failed", o) : r.includes("checkContentScriptReachable") || r.includes("connecting to content script timed out") ? a.default.notice("Job execution failed", o) : a.default.error("Job execution failed", o), 
-                    e.markAsFailed(t);
+                    o.default.startsWith(t, "PAGE_STATUS_CODE_ERROR") ? a.default.notice("Job execution failed", s) : o.default.startsWith(t, "PAGE_REQUEST_ERROR") ? a.default.notice("Job execution failed", s) : o.default.startsWith(t, "PAGE_UNKNOWN_CONTENT_TYPE_ERROR") ? a.default.notice("Job execution failed", s) : o.default.includes(t, "tabStatusLoadedPromise") ? a.default.notice("Job execution failed", s) : o.default.includes(t, "tabNetworkStatusLoadedPromise") ? a.default.notice("Job execution failed", s) : o.default.includes(t, "checkContentScriptReachable") || o.default.includes(t, "connecting to content script timed out") ? a.default.notice("Job execution failed", s) : a.default.error("Job execution failed", s), 
+                    e.markAsFailed(r);
                 }
             });
         }
@@ -19311,7 +19326,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(37);
+    const a = i(37), r = i(313);
     t.default = class extends a.default {
         constructor(e) {
             super(), this.webPage = e;
@@ -19322,7 +19337,7 @@
                 try {
                     return yield this.webPage.openPage(i), yield t();
                 } catch (i) {
-                    if (i.toString().startsWith("PAGE_STATUS_CODE_ERROR")) {
+                    if (r.default.startsWith(i, "PAGE_STATUS_CODE_ERROR")) {
                         e.page_load_failed_with_status_code_error = !0;
                         const n = yield t();
                         if (e.retry) return n;
@@ -19443,65 +19458,6 @@
     });
     const a = i(14), r = i(10), o = i(37);
     t.default = class extends o.default {
-        constructor(e) {
-            super(), this.webPage = e, this.captchaDetectionSelectors = [ "iframe[src*='https://www.google.com/recaptcha/api2/']" ];
-        }
-        pageHasCaptcha() {
-            return n(this, void 0, void 0, function*() {
-                if ("undefined" == typeof window) return !1;
-                if (!0 !== window.stopOnCaptcha) return !1;
-                const e = this.webPage;
-                for (const t of this.captchaDetectionSelectors) if (null !== (yield e.getElement(t))) return !0;
-                return !1;
-            });
-        }
-        alertUser() {
-            return n(this, void 0, void 0, function*() {});
-        }
-        handle(e, t) {
-            return n(this, void 0, void 0, function*() {
-                let e = yield this.pageHasCaptcha();
-                if (e) {
-                    r.default.info("Page has captcha. Waiting for user to resolve it"), yield this.alertUser();
-                    do {
-                        yield a.default.sleep(1e3), e = yield this.pageHasCaptcha();
-                    } while (e);
-                }
-                return yield t();
-            });
-        }
-    };
-}, function(e, t, i) {
-    "use strict";
-    var n = this && this.__awaiter || function(e, t, i, n) {
-        return new (i || (i = Promise))(function(a, r) {
-            function o(e) {
-                try {
-                    c(n.next(e));
-                } catch (e) {
-                    r(e);
-                }
-            }
-            function s(e) {
-                try {
-                    c(n.throw(e));
-                } catch (e) {
-                    r(e);
-                }
-            }
-            function c(e) {
-                e.done ? a(e.value) : new i(function(t) {
-                    t(e.value);
-                }).then(o, s);
-            }
-            c((n = n.apply(e, t || [])).next());
-        });
-    };
-    Object.defineProperty(t, "__esModule", {
-        value: !0
-    });
-    const a = i(14), r = i(10), o = i(37);
-    t.default = class extends o.default {
         constructor(e, t) {
             super(), this.webPage = e, this.sitemap = t;
         }
@@ -19578,6 +19534,65 @@
                     return yield this.middlewares[i].handle(e, t.bind(this, i + 1));
                 });
                 return yield t(0);
+            });
+        }
+    };
+}, function(e, t, i) {
+    "use strict";
+    var n = this && this.__awaiter || function(e, t, i, n) {
+        return new (i || (i = Promise))(function(a, r) {
+            function o(e) {
+                try {
+                    c(n.next(e));
+                } catch (e) {
+                    r(e);
+                }
+            }
+            function s(e) {
+                try {
+                    c(n.throw(e));
+                } catch (e) {
+                    r(e);
+                }
+            }
+            function c(e) {
+                e.done ? a(e.value) : new i(function(t) {
+                    t(e.value);
+                }).then(o, s);
+            }
+            c((n = n.apply(e, t || [])).next());
+        });
+    };
+    Object.defineProperty(t, "__esModule", {
+        value: !0
+    });
+    const a = i(14), r = i(10), o = i(37);
+    t.default = class extends o.default {
+        constructor(e) {
+            super(), this.webPage = e, this.captchaDetectionSelectors = [ "iframe[src*='https://www.google.com/recaptcha/api2/']" ];
+        }
+        pageHasCaptcha() {
+            return n(this, void 0, void 0, function*() {
+                if ("undefined" == typeof window) return !1;
+                if (!0 !== window.stopOnCaptcha) return !1;
+                const e = this.webPage;
+                for (const t of this.captchaDetectionSelectors) if (null !== (yield e.getElement(t))) return !0;
+                return !1;
+            });
+        }
+        alertUser() {
+            return n(this, void 0, void 0, function*() {});
+        }
+        handle(e, t) {
+            return n(this, void 0, void 0, function*() {
+                let e = yield this.pageHasCaptcha();
+                if (e) {
+                    r.default.info("Page has captcha. Waiting for user to resolve it"), yield this.alertUser();
+                    do {
+                        yield a.default.sleep(1e3), e = yield this.pageHasCaptcha();
+                    } while (e);
+                }
+                return yield t();
             });
         }
     };
@@ -20142,7 +20157,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(311);
+    const a = i(312);
     t.default = class {
         constructor(e) {
             this.urlsAddedToQueue = {}, this.jobQueue = [], this.dataWriter = e.dataWriter, 
@@ -20212,7 +20227,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(364), r = i(47);
+    const a = i(366), r = i(47);
     let o;
     o = void 0 !== a.default ? a.default : a;
     t.default = class {
@@ -20363,8 +20378,8 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     }), function(e) {
-        var n = i(365), a = i.n(n), r = i(366), o = i.n(r), s = i(312), c = i.n(s), l = i(367), u = (i.n(l), 
-        i(368)), p = i.n(u), d = i(369), m = i.n(d), g = i(372), f = i.n(g), h = i(375), y = i.n(h), b = i(376), v = i.n(b), A = "function" == typeof Promise ? Promise : a.a;
+        var n = i(367), a = i.n(n), r = i(368), o = i.n(r), s = i(314), c = i.n(s), l = i(369), u = (i.n(l), 
+        i(370)), p = i.n(u), d = i(371), m = i.n(d), g = i(374), f = i.n(g), h = i(377), y = i.n(h), b = i(378), v = i.n(b), A = "function" == typeof Promise ? Promise : a.a;
         function C(e) {
             if (e instanceof ArrayBuffer) return function(e) {
                 if ("function" == typeof e.slice) return e.slice(0);
@@ -25621,7 +25636,7 @@
     }.call(t, i(20));
 }, function(e, t, i) {
     "use strict";
-    var n = i(312);
+    var n = i(314);
     function a() {}
     var r = {}, o = [ "REJECTED" ], s = [ "FULFILLED" ], c = [ "PENDING" ];
     function l(e) {
@@ -25861,10 +25876,10 @@
         i.prototype = t.prototype, e.prototype = new i(), e.prototype.constructor = e;
     };
 }, function(e, t, i) {
-    var n = i(370), a = i(371), r = a;
+    var n = i(372), a = i(373), r = a;
     r.v1 = n, r.v4 = a, e.exports = r;
 }, function(e, t, i) {
-    var n, a, r = i(313), o = i(314), s = 0, c = 0;
+    var n, a, r = i(315), o = i(316), s = 0, c = 0;
     e.exports = function(e, t, i) {
         var l = t && i || 0, u = t || [], p = (e = e || {}).node || n, d = void 0 !== e.clockseq ? e.clockseq : a;
         if (null == p || null == d) {
@@ -25884,7 +25899,7 @@
         return t || o(u);
     };
 }, function(e, t, i) {
-    var n = i(313), a = i(314);
+    var n = i(315), a = i(316);
     e.exports = function(e, t, i) {
         var r = t && i || 0;
         "string" == typeof e && (t = "binary" === e ? new Array(16) : null, e = null);
@@ -25901,7 +25916,7 @@
             } catch (e) {}
             return !e && void 0 !== n && "env" in n && (e = n.env.DEBUG), e;
         }
-        (t = e.exports = i(373)).log = function() {
+        (t = e.exports = i(375)).log = function() {
             return "object" == typeof console && console.log && Function.prototype.apply.call(console.log, console, arguments);
         }, t.formatArgs = function(e) {
             var i = this.useColors;
@@ -25986,7 +26001,7 @@
         for (i = 0, n = t.skips.length; i < n; i++) if (t.skips[i].test(e)) return !1;
         for (i = 0, n = t.names.length; i < n; i++) if (t.names[i].test(e)) return !0;
         return !1;
-    }, t.humanize = i(374), t.instances = [], t.names = [], t.skips = [], t.formatters = {};
+    }, t.humanize = i(376), t.instances = [], t.names = [], t.skips = [], t.formatters = {};
 }, function(e, t) {
     var i = 1e3, n = 60 * i, a = 60 * n, r = 24 * a, o = 365.25 * r;
     function s(e, t, i) {
@@ -26348,7 +26363,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(378), r = i(14), o = i(397), s = i(10);
+    const a = i(380), r = i(14), o = i(399), s = i(10);
     t.default = class {
         constructor(e) {
             this.surveyServer = "https://www.webscraper.io/", this.surveyInterval = 144e5, this.statId = e.statId, 
@@ -26447,10 +26462,10 @@
         }
     };
 }, function(e, t, i) {
-    e.exports = i(379);
+    e.exports = i(381);
 }, function(e, t, i) {
     "use strict";
-    var n = i(38), a = i(315), r = i(381), o = i(184);
+    var n = i(38), a = i(317), r = i(383), o = i(184);
     function s(e) {
         var t = new r(e), i = a(r.prototype.request, t);
         return n.extend(i, r.prototype, t), n.extend(i, t), i;
@@ -26458,9 +26473,9 @@
     var c = s(o);
     c.Axios = r, c.create = function(e) {
         return s(n.merge(o, e));
-    }, c.Cancel = i(319), c.CancelToken = i(395), c.isCancel = i(318), c.all = function(e) {
+    }, c.Cancel = i(321), c.CancelToken = i(397), c.isCancel = i(320), c.all = function(e) {
         return Promise.all(e);
-    }, c.spread = i(396), e.exports = c, e.exports.default = c;
+    }, c.spread = i(398), e.exports = c, e.exports.default = c;
 }, function(e, t) {
     function i(e) {
         return !!e.constructor && "function" == typeof e.constructor.isBuffer && e.constructor.isBuffer(e);
@@ -26472,7 +26487,7 @@
     };
 }, function(e, t, i) {
     "use strict";
-    var n = i(184), a = i(38), r = i(390), o = i(391);
+    var n = i(184), a = i(38), r = i(392), o = i(393);
     function s(e) {
         this.defaults = e, this.interceptors = {
             request: new r(),
@@ -26518,7 +26533,7 @@
     };
 }, function(e, t, i) {
     "use strict";
-    var n = i(317);
+    var n = i(319);
     e.exports = function(e, t, i) {
         var a = i.config.validateStatus;
         i.status && a && !a(i.status) ? t(n("Request failed with status code " + i.status, i.config, null, i.request, i)) : e(i);
@@ -26645,7 +26660,7 @@
     }, e.exports = a;
 }, function(e, t, i) {
     "use strict";
-    var n = i(38), a = i(392), r = i(318), o = i(184), s = i(393), c = i(394);
+    var n = i(38), a = i(394), r = i(320), o = i(184), s = i(395), c = i(396);
     function l(e) {
         e.cancelToken && e.cancelToken.throwIfRequested();
     }
@@ -26681,7 +26696,7 @@
     };
 }, function(e, t, i) {
     "use strict";
-    var n = i(319);
+    var n = i(321);
     function a(e) {
         if ("function" != typeof e) throw new TypeError("executor must be a function.");
         var t;
@@ -26717,7 +26732,7 @@
         Object.defineProperty(t, "__esModule", {
             value: !0
         });
-        const n = i(398), a = i(400);
+        const n = i(400), a = i(402);
         t.default = new class {
             constructor() {
                 e.version ? this.driver = new a.default() : this.driver = new n.default();
@@ -26762,7 +26777,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(399), r = i(10);
+    const a = i(401), r = i(10);
     t.default = class {
         get(e, t) {
             return n(this, void 0, void 0, function*() {
@@ -26938,7 +26953,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(14), r = i(10), o = i(402);
+    const a = i(14), r = i(10), o = i(404);
     t.default = class extends o.default {
         constructor(e) {
             super(e), this.pageLoadDelay = e.pageLoadDelay, this.failOnErrorPages = !1 !== e.failOnErrorPages, 
@@ -26988,13 +27003,16 @@
         }
         openPage(e) {
             return n(this, void 0, void 0, function*() {
+                this.url = e;
                 const t = yield this.windowExists();
                 this.resetWaitAjax(e);
                 const i = Date.now();
                 let n = !1;
                 t && (n = yield this.isHashTagOnlyChange(e)), this.resetTabNetworkStatusListener(), 
-                this.resetTabStatusListener(), t ? yield this.loadPageInTab(e) : yield this.createWindow(e), 
-                n ? yield this.waitAjax() : yield this.waitForTabNetworkStatus(), this.checkErrorsHappenedDuringPageLoad(!1), 
+                this.resetTabStatusListener();
+                let o = null;
+                n || (o = this.waitForTabNetworkStatus()), t ? yield this.loadPageInTab(e) : yield this.createWindow(e), 
+                n ? yield this.waitAjax() : yield o, this.checkErrorsHappenedDuringPageLoad(!1), 
                 yield this.waitForTabStatusComplete(), yield a.default.sleepDifference(i, this.pageLoadDelay), 
                 r.default.debug("opened page"), this.checkErrorsHappenedDuringPageLoad(this.failOnErrorPages), 
                 r.default.debug("checking that page has loaded by connecting to it");
@@ -27008,6 +27026,11 @@
                 }
                 yield this.waitForPageLoad(), r.default.debug("waiting for page ajax"), yield this.waitAjax(), 
                 r.default.debug("waited for page ajax");
+            });
+        }
+        getPupeteerPage() {
+            return n(this, void 0, void 0, function*() {
+                return null;
             });
         }
         loadPageInTab(e) {
@@ -27090,7 +27113,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(403), r = i(10);
+    const a = i(405), r = i(10);
     t.default = class extends a.default {
         initImageBlocker() {
             return n(this, void 0, void 0, function*() {
@@ -27166,7 +27189,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(10), r = i(404);
+    const a = i(10), r = i(406);
     t.default = class extends r.default {
         constructor() {
             super(...arguments), this.proxyAuthCallbacks = [];
@@ -27289,11 +27312,12 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(14), r = i(185), o = i(10), s = i(405);
+    const a = i(14), r = i(185), o = i(10), s = i(407);
     t.default = class extends s.default {
         constructor() {
             super(...arguments), this.tabNetworkStatusRequestinitializedCallbacks = [], this.tabNetworkStatusRequestcompletedCallbacks = [], 
-            this.currentContentType = "", this.networkStatusReceived = !1, this.networkStatusReceivedCallback = null;
+            this.currentContentType = "", this.networkStatusReceived = !1, this.networkStatusReceivedCallback = null, 
+            this.networkStatusStartedCallback = null;
         }
         checkErrorsHappenedDuringPageLoad(e = !0) {
             if (this.isStatusCodeError() && e) throw "PAGE_STATUS_CODE_ERROR";
@@ -27304,17 +27328,17 @@
             if (void 0 === chrome.webRequest) return;
             const e = {
                 urls: [ "<all_urls>" ],
-                types: [ "main_frame" ]
+                types: [ "main_frame", "xmlhttprequest" ]
             }, t = this.onTabNetworkRequestInitialized.bind(this);
             this.tabNetworkStatusRequestinitializedCallbacks.push(t), chrome.webRequest.onBeforeRequest.addListener(t, e, [ "requestBody" ]);
             const i = this.onTabNetworkRequestCompleted.bind(this);
-            this.tabNetworkStatusRequestcompletedCallbacks.push(i), chrome.webRequest.onCompleted.addListener(i, e, [ "responseHeaders" ]), 
+            this.tabNetworkStatusRequestcompletedCallbacks.push(i), chrome.webRequest.onHeadersReceived.addListener(i, e, [ "responseHeaders" ]), 
             chrome.webRequest.onErrorOccurred.addListener(i, e);
         }
         deInitTabNetworkStatusListener() {
             for (const e of this.tabNetworkStatusRequestinitializedCallbacks) chrome.webRequest.onBeforeRequest.removeListener(e);
             this.tabNetworkStatusRequestinitializedCallbacks = [];
-            for (const e of this.tabNetworkStatusRequestcompletedCallbacks) chrome.webRequest.onCompleted.removeListener(e), 
+            for (const e of this.tabNetworkStatusRequestcompletedCallbacks) chrome.webRequest.onHeadersReceived.removeListener(e), 
             chrome.webRequest.onErrorOccurred.removeListener(e);
             this.tabNetworkStatusRequestcompletedCallbacks = [];
         }
@@ -27325,40 +27349,71 @@
             return n(this, void 0, void 0, function*() {
                 if (this.networkStatusReceived) return;
                 if (null !== this.networkStatusReceivedCallback) throw "networkStatusReceivedCallback already registered";
+                if (null !== this.networkStatusStartedCallback) throw "networkStatusStartedCallback already registered";
                 const e = new Promise((e, t) => {
+                    this.networkStatusStartedCallback = e;
+                }), t = new Promise((e, t) => {
                     this.networkStatusReceivedCallback = e;
                 });
                 try {
-                    yield a.default.timeoutPromise(e, 3e4, "tabNetworkStatusLoadedPromise");
+                    try {
+                        yield a.default.timeoutPromise(e, 1e3, "networkStatusStartedCallback");
+                    } catch (e) {
+                        if ("timeout: networkStatusStartedCallback" === e.message) return o.default.notice("didn't receive page load start network event. Probably being loaded via worker"), 
+                        this.networkStatusStartedCallback = null, this.networkStatusReceivedCallback = null, 
+                        this.currentTabStatusCode = 200, this.currentContentType = "text/html-missing-request-because-of-worker", 
+                        void (this.networkStatusReceived = !0);
+                    }
+                    yield a.default.timeoutPromise(t, 3e4, "tabNetworkStatusLoadedPromise");
                 } catch (e) {
-                    throw this.networkStatusReceivedCallback = null, e;
+                    throw this.networkStatusStartedCallback = null, this.networkStatusReceivedCallback = null, 
+                    e;
                 }
             });
         }
+        isRequestMonitored(e) {
+            const t = -1 === e.tabId && "xmlhttprequest" === e.type && e.url === this.url, i = e.tabId === this.tabId && -1 === e.parentFrameId && "main_frame" === e.type, n = !this.tabId && "main_frame" === e.type && e.url === this.url;
+            return !!(t || i || n);
+        }
         onTabNetworkRequestInitialized(e) {
-            e.tabId === this.tabId && -1 === e.parentFrameId && "main_frame" === e.type && (this.currentTabNetworkStatus = "LOADING", 
-            this.currentTabStatusCode = 0);
+            if (this.isRequestMonitored(e) && (this.currentTabNetworkStatus = "LOADING", this.currentTabStatusCode = 0, 
+            this.networkStatusStartedCallback)) {
+                const e = this.networkStatusStartedCallback;
+                this.networkStatusStartedCallback = null, e();
+            }
         }
         onTabNetworkRequestCompleted(e) {
-            if (e.tabId === this.tabId && -1 === e.parentFrameId && "main_frame" === e.type) {
-                if (void 0 !== e.error) this.currentTabNetworkStatus = "ERROR", o.default.notice("PAGE_REQUEST_ERROR", {
-                    error: e.error,
-                    url: e.url
-                }); else {
-                    this.currentTabNetworkStatus = "LOADED", this.currentTabStatusCode = e.statusCode, 
-                    e.statusCode >= 400 && o.default.notice("PAGE_STATUS_CODE_ERROR", {
-                        statusCode: e.statusCode,
+            if (this.isRequestMonitored(e)) if (this.networkStatusReceivedCallback) {
+                if (301 !== e.statusCode && 302 !== e.statusCode && 303 !== e.statusCode && 307 !== e.statusCode && 308 !== e.statusCode) {
+                    if (void 0 !== e.error) this.currentTabNetworkStatus = "ERROR", o.default.notice("PAGE_REQUEST_ERROR", {
+                        error: e.error,
                         url: e.url
-                    });
-                    let t = "";
-                    for (const i of e.responseHeaders) "Content-Type" === i.name && (t = i.value);
-                    this.currentContentType = t;
+                    }); else {
+                        this.currentTabNetworkStatus = "LOADED", this.currentTabStatusCode = e.statusCode, 
+                        e.statusCode >= 400 && o.default.notice("PAGE_STATUS_CODE_ERROR", {
+                            statusCode: e.statusCode,
+                            url: e.url
+                        });
+                        let t = "";
+                        for (const i of e.responseHeaders) "Content-Type" === i.name && (t = i.value);
+                        this.currentContentType = t;
+                    }
+                    if (this.networkStatusReceived = !0, this.networkStatusReceivedCallback) {
+                        const e = this.networkStatusReceivedCallback;
+                        this.networkStatusReceivedCallback = null, e();
+                    }
                 }
-                if (this.networkStatusReceived = !0, this.networkStatusReceivedCallback) {
-                    const e = this.networkStatusReceivedCallback;
-                    this.networkStatusReceivedCallback = null, e();
-                }
-            }
+            } else void 0 !== e.error ? o.default.notice("received Page request network error when response was already received", {
+                error: e.error,
+                url: e.url
+            }) : e.url !== this.url ? o.default.notice("unexpected page load. Probably html/javascript redirect", {
+                details: JSON.stringify(e),
+                url: e.url,
+                expectedUrl: this.url
+            }) : o.default.warning("unexpected network response", {
+                details: JSON.stringify(e),
+                url: e.url
+            });
         }
         isPageRequestError() {
             return "ERROR" === this.currentTabNetworkStatus;
@@ -27396,7 +27451,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(406), r = i(14), o = i(409);
+    const a = i(408), r = i(14), o = i(411);
     t.default = class extends o.default {
         constructor() {
             super(...arguments), this.ajaxRequests = {}, this.waitAjaxTimeout = 1e4, this.currentlyMonitoredDomain = "", 
@@ -27464,7 +27519,7 @@
 }, function(e, t, i) {
     "use strict";
     (function(t) {
-        var n = i(407), a = i(408), r = /^([a-z][a-z0-9.+-]*:)?(\/\/)?([\S\s]*)/i, o = /^[A-Za-z][A-Za-z0-9+-.]*:\/\//, s = [ [ "#", "hash" ], [ "?", "query" ], [ "/", "pathname" ], [ "@", "auth", 1 ], [ NaN, "host", void 0, 1, 1 ], [ /:(\d+)$/, "port", void 0, 1 ], [ NaN, "hostname", void 0, 1, 1 ] ], c = {
+        var n = i(409), a = i(410), r = /^([a-z][a-z0-9.+-]*:)?(\/\/)?([\S\s]*)/i, o = /^[A-Za-z][A-Za-z0-9+-.]*:\/\//, s = [ [ "#", "hash" ], [ "?", "query" ], [ "/", "pathname" ], [ "@", "auth", 1 ], [ NaN, "host", void 0, 1, 1 ], [ /:(\d+)$/, "port", void 0, 1 ], [ NaN, "hostname", void 0, 1, 1 ] ], c = {
             hash: 1,
             query: 1
         };
@@ -27626,7 +27681,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(10), r = i(410);
+    const a = i(10), r = i(412);
     t.default = class extends r.default {
         constructor(e) {
             super(e), this.windowRefreshInterval = 3e4, this.chromeWindowConfiguration = {
@@ -27758,7 +27813,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(10), r = i(411), o = i(14);
+    const a = i(10), r = i(413), o = i(14);
     t.default = class extends r.default {
         getScreenShotBase64() {
             return n(this, void 0, void 0, function*() {
@@ -27808,7 +27863,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(10), r = i(412);
+    const a = i(10), r = i(414);
     t.default = class extends r.default {
         sendMessage(e, t, i) {
             void 0 === t && (t = []);
@@ -27899,9 +27954,9 @@
                 return yield this.sendMessage("getPopupURL", [ e ]);
             });
         }
-        scrollDown(e, t, i, a) {
+        scrollDownElement(e, t, i = !1, a) {
             return n(this, void 0, void 0, function*() {
-                return yield this.sendMessage("scrollDown", [ e, t, i, a ]);
+                return yield this.sendMessage("scrollDownElement", [ e, t, i, a ]);
             });
         }
         click(e, t = "auto") {
@@ -28001,7 +28056,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(14), r = i(10), o = i(413);
+    const a = i(14), r = i(10), o = i(415);
     t.default = class extends o.default {
         constructor() {
             super(...arguments), this.tabUpdatedListener = null, this.tabRemovedListener = null, 
@@ -28127,7 +28182,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(415), r = i(416);
+    const a = i(417), r = i(418);
     t.default = class extends a.default {
         constructor(e) {
             super(), this.chromeClient = e.chromeClient, this.pageLoadDelay = e.pageLoadDelay;
@@ -28172,13 +28227,18 @@
                 yield this.chromeClient.waitAjax();
             });
         }
+        getPupeteerPage() {
+            return n(this, void 0, void 0, function*() {
+                return this.chromeClient.getPupeteerPage();
+            });
+        }
     };
 }, function(e, t, i) {
     "use strict";
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const n = i(320);
+    const n = i(322);
     t.default = class extends n.default {};
 }, function(e, t, i) {
     "use strict";
@@ -28209,7 +28269,7 @@
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    const a = i(321);
+    const a = i(323);
     class r extends a.default {
         constructor(e, t) {
             super(e), this.driver = "chrome-tab", this.contentScriptClient = t;
@@ -28270,9 +28330,9 @@
                 return yield this.contentScriptClient.getCSSSelector(this.element);
             });
         }
-        scrollDown(e, t, i) {
+        scrollDownElement(e, t, i = !1, a) {
             return n(this, void 0, void 0, function*() {
-                yield this.contentScriptClient.scrollDown(this.element, e, t, i);
+                yield this.contentScriptClient.scrollDownElement(e, t, i, a);
             });
         }
         scrollDownBody(e, t, i = !1) {
