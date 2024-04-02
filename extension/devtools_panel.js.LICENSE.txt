@@ -5,17 +5,6 @@ object-assign
 */
 
 /*!
- * BootstrapValidator (http://bootstrapvalidator.com)
- * The best jQuery plugin to validate form fields. Designed to use with Bootstrap 3
- *
- * @version     v0.5.3, built on 2014-11-05 9:14:18 PM
- * @author      https://twitter.com/nghuuphuoc
- * @copyright   (c) 2013 - 2014 Nguyen Huu Phuoc
- * @license     Commercial: http://bootstrapvalidator.com/license/
- *              Non-commercial: http://creativecommons.org/licenses/by-nc-nd/3.0/
- */
-
-/*!
  * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *
@@ -46,6 +35,8 @@ object-assign
  *
  * Date: 2020-05-04T22:49Z
  */
+
+/*! https://mths.be/cssesc v3.0.0 by @mathias */
 
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 
