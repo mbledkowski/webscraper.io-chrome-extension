@@ -1,1 +1,32 @@
-!function(e){function r(t){if(n[t])return n[t].exports;var o=n[t]={i:t,l:!1,exports:{}};return e[t].call(o.exports,o,o.exports,r),o.l=!0,o.exports}var n={};r.m=e,r.c=n,r.d=function(e,n,t){r.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:t})},r.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(n,"a",n),n},r.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},r.p="",r(r.s=471)}({471:function(e,r){chrome.devtools.panels.create("Web Scraper","images/icon48.png","devtools_web_scraper_panel.html")}});
+!function(e) {
+    var r = {};
+    function n(t) {
+        if (r[t]) return r[t].exports;
+        var o = r[t] = {
+            i: t,
+            l: !1,
+            exports: {}
+        };
+        return e[t].call(o.exports, o, o.exports, n), o.l = !0, o.exports;
+    }
+    n.m = e, n.c = r, n.d = function(e, r, t) {
+        n.o(e, r) || Object.defineProperty(e, r, {
+            configurable: !1,
+            enumerable: !0,
+            get: t
+        });
+    }, n.n = function(e) {
+        var r = e && e.__esModule ? function() {
+            return e.default;
+        } : function() {
+            return e;
+        };
+        return n.d(r, "a", r), r;
+    }, n.o = function(e, r) {
+        return Object.prototype.hasOwnProperty.call(e, r);
+    }, n.p = "", n(n.s = 566);
+}({
+    566: function(e, r) {
+        chrome.devtools.panels.create("Web Scraper", "images/icon48.png", "devtools_web_scraper_panel.html");
+    }
+});
