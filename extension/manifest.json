@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "0.6.1",
+    "version": "0.6.4",
     "name": "Web Scraper - Free Web Scraping",
     "short_name": "Web Scraper",
     "description": "Web data extraction tool with an easy point-and-click interface for modern web",
