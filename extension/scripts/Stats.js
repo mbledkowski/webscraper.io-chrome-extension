@@ -12,8 +12,8 @@ var Stats = function (options) {
 	this.usageStartTimes = {};
 
 	var day = 1000 * 60 * 60 * 24;
-	this.randomFirstReportInMs = options.randomFirstReportInMs || 4 * day;
-	this.reportInMs = options.reportInMs || 1 * day;
+	this.randomFirstReportInMs = options.randomFirstReportInMs || 5 * day;
+	this.reportInMs = options.reportInMs || 6 * day;
 	this.potentialSubmitIntervalMs = options.potentialSubmitIntervalMs || 60e3;
 };
 
