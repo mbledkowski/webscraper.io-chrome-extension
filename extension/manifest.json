@@ -1,11 +1,11 @@
 {
 	"manifest_version": 2,
-	"version": "0.4.2",
-	"name": "Web Scraper",
+	"version": "0.5.2",
+	"name": "Web Scraper - Free Web Scraping",
 	"short_name": "Web Scraper",
-	"description": "Web site data extraction tool",
-	"permissions": ["<all_urls>", "tabs", "notifications", "storage", "unlimitedStorage", "downloads"],
-  	"optional_permissions": [ "webRequest", "webRequestBlocking", "<all_urls>" ],
+	"description": "Web data extraction tool with an easy point-and-click interface for modern web",
+	"permissions": ["<all_urls>", "tabs", "notifications", "storage", "unlimitedStorage"],
+  	"optional_permissions": [ "webRequest"],
 	"icons": {
 		"16": "images/icon16.png",
 		"48": "images/icon48.png",
@@ -22,27 +22,26 @@
 	},
 	"options_page": "options.html",
 	"devtools_page": "devtools_init_page.html",
-	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"background": {
 		"scripts": [
 			"background_script.js"
 		]
 	},
+	"minimum_chrome_version": "60",
 	"web_accessible_resources": [
 		"images/icon16.png",
 		"images/icon24.png",
 		"images/icon32.png",
 		"images/icon48.png",
-		"images/icon128.png"
+		"images/icon128.png",
+		"frame.html"
 	],
 	"content_scripts": [
 		{
 			"matches": ["*://*/*"],
 			"js": [
 				"content_script.js"
-			],
-			"css": [
-				"content_script.css"
 			]
 		}
 	]

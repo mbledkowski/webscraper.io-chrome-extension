@@ -1,32 +1,48 @@
 !function(e) {
-    var r = {};
-    function t(n) {
-        if (r[n]) return r[n].exports;
-        var o = r[n] = {
+    var t = {};
+    function r(n) {
+        if (t[n]) return t[n].exports;
+        var o = t[n] = {
             i: n,
             l: !1,
             exports: {}
         };
-        return e[n].call(o.exports, o, o.exports, t), o.l = !0, o.exports;
+        return e[n].call(o.exports, o, o.exports, r), o.l = !0, o.exports;
     }
-    t.m = e, t.c = r, t.d = function(e, r, n) {
-        t.o(e, r) || Object.defineProperty(e, r, {
-            configurable: !1,
+    r.m = e, r.c = t, r.d = function(e, t, n) {
+        r.o(e, t) || Object.defineProperty(e, t, {
             enumerable: !0,
             get: n
         });
-    }, t.n = function(e) {
-        var r = e && e.__esModule ? function() {
+    }, r.r = function(e) {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+            value: "Module"
+        }), Object.defineProperty(e, "__esModule", {
+            value: !0
+        });
+    }, r.t = function(e, t) {
+        if (1 & t && (e = r(e)), 8 & t) return e;
+        if (4 & t && "object" == typeof e && e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (r.r(n), Object.defineProperty(n, "default", {
+            enumerable: !0,
+            value: e
+        }), 2 & t && "string" != typeof e) for (var o in e) r.d(n, o, function(t) {
+            return e[t];
+        }.bind(null, o));
+        return n;
+    }, r.n = function(e) {
+        var t = e && e.__esModule ? function() {
             return e.default;
         } : function() {
             return e;
         };
-        return t.d(r, "a", r), r;
-    }, t.o = function(e, r) {
-        return Object.prototype.hasOwnProperty.call(e, r);
-    }, t.p = "", t(t.s = 572);
+        return r.d(t, "a", t), t;
+    }, r.o = function(e, t) {
+        return Object.prototype.hasOwnProperty.call(e, t);
+    }, r.p = "", r(r.s = 563);
 }({
-    572: function(e, r) {
+    563: function(e, t) {
         navigator.platform.indexOf("Linux") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("linux") : navigator.platform.indexOf("Mac") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("mac") : navigator.platform.indexOf("Win") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("windows") : document.querySelectorAll(".open-web-scraper")[0].classList.add("other"), 
         1 === Math.round(Math.random()) ? document.querySelector(".btn-primary.test-a").classList.remove("hide") : document.querySelector(".btn-primary.test-b").classList.remove("hide");
     }

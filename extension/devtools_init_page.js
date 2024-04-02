@@ -1,32 +1,48 @@
 !function(e) {
-    var r = {};
-    function n(t) {
-        if (r[t]) return r[t].exports;
-        var o = r[t] = {
-            i: t,
+    var t = {};
+    function r(n) {
+        if (t[n]) return t[n].exports;
+        var o = t[n] = {
+            i: n,
             l: !1,
             exports: {}
         };
-        return e[t].call(o.exports, o, o.exports, n), o.l = !0, o.exports;
+        return e[n].call(o.exports, o, o.exports, r), o.l = !0, o.exports;
     }
-    n.m = e, n.c = r, n.d = function(e, r, t) {
-        n.o(e, r) || Object.defineProperty(e, r, {
-            configurable: !1,
+    r.m = e, r.c = t, r.d = function(e, t, n) {
+        r.o(e, t) || Object.defineProperty(e, t, {
             enumerable: !0,
-            get: t
+            get: n
         });
-    }, n.n = function(e) {
-        var r = e && e.__esModule ? function() {
+    }, r.r = function(e) {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+            value: "Module"
+        }), Object.defineProperty(e, "__esModule", {
+            value: !0
+        });
+    }, r.t = function(e, t) {
+        if (1 & t && (e = r(e)), 8 & t) return e;
+        if (4 & t && "object" == typeof e && e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (r.r(n), Object.defineProperty(n, "default", {
+            enumerable: !0,
+            value: e
+        }), 2 & t && "string" != typeof e) for (var o in e) r.d(n, o, function(t) {
+            return e[t];
+        }.bind(null, o));
+        return n;
+    }, r.n = function(e) {
+        var t = e && e.__esModule ? function() {
             return e.default;
         } : function() {
             return e;
         };
-        return n.d(r, "a", r), r;
-    }, n.o = function(e, r) {
-        return Object.prototype.hasOwnProperty.call(e, r);
-    }, n.p = "", n(n.s = 568);
+        return r.d(t, "a", t), t;
+    }, r.o = function(e, t) {
+        return Object.prototype.hasOwnProperty.call(e, t);
+    }, r.p = "", r(r.s = 540);
 }({
-    568: function(e, r) {
+    540: function(e, t) {
         chrome.devtools.panels.create("Web Scraper", "images/icon48.png", "devtools_web_scraper_panel.html");
     }
 });
