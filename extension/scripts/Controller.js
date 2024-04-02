@@ -204,6 +204,18 @@ SitemapController.prototype = {
 			});
 			this.showSitemaps();
 		}.bind(this));
+
+		// web scraper was used today
+		this.backgroundScript.setDailyStat({
+			key: "webScraperOpened",
+			value: true
+		});
+
+		// start web scraper usage counter
+		this.backgroundScript.updateExtensionIsBeingUsed();
+		setInterval(function() {
+			this.backgroundScript.updateExtensionIsBeingUsed();
+		}.bind(this),60e3);
 	},
 
 	clearState: function () {
@@ -455,6 +467,12 @@ SitemapController.prototype = {
 				validator.updateStatus('_id', 'INVALID', 'callback');
 			}
 			else {
+				// stats
+				this.backgroundScript.incrementDailyStat({
+					key: "sitemapsCreated",
+					increment: 1
+				});
+
 				var sitemap = new Sitemap({
 					_id: sitemapData.id,
 					startUrl: sitemapData.startUrl,
@@ -490,6 +508,12 @@ SitemapController.prototype = {
 				validator.updateStatus('_id', 'INVALID', 'callback');
 			}
 			else {
+				// stats
+				this.backgroundScript.incrementDailyStat({
+					key: "sitemapsImported",
+					increment: 1
+				});
+
 				this.store.createSitemap(sitemap, function (sitemap) {
 					this._editSitemap(sitemap, ['_root']);
 				}.bind(this, sitemap));
@@ -945,6 +969,13 @@ SitemapController.prototype = {
 	deleteSitemap: function (button) {
 		var sitemap = $(button).closest("tr").data("sitemap");
 		var controller = this;
+
+		// stats
+		this.backgroundScript.incrementDailyStat({
+			key: "sitemapsDeleted",
+			increment: 1
+		});
+		
 		this.store.deleteSitemap(sitemap, function () {
 			controller.showSitemaps();
 		});
@@ -1001,6 +1032,12 @@ SitemapController.prototype = {
 		if(!this.isValidForm()) {
 			return false;
 		}
+
+		// stats
+		this.backgroundScript.incrementDailyStat({
+			key: "scrapingJobsRun",
+			increment: 1
+		});
 
 		var requestInterval = $("input[name=requestInterval]").val();
 		var pageLoadDelay = $("input[name=pageLoadDelay]").val();

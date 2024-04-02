@@ -33,6 +33,25 @@ var BackgroundScript = {
 		return deferredResponse.promise();
 	},
 
+	incrementDailyStat: function(request) {
+
+		var stats = window.stats;
+		return stats.incrementDailyStat(request.key, request.increment);
+	},
+
+	setDailyStat: function(request) {
+
+		var stats = window.stats;
+		return stats.setDailyStat(request.key, request.value);
+	},
+
+	updateExtensionIsBeingUsed: function() {
+
+		var stats = window.stats;
+		stats.updateExtensionIsBeingUsed();
+		return $.Deferred().resolve().promise();
+	},
+
 	/**
 	 * Execute a function within the active tab within content script
 	 * @param request.fn	function to call

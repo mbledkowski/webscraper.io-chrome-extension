@@ -1,8 +1,17 @@
 var config = new Config();
 var store;
+var stats;
 config.loadConfiguration(function () {
 	console.log("initial configuration", config);
 	store = new Store(config);
+
+	 stats = new Stats({
+		store: store,
+		config:config
+	});
+	stats.initStats().then(function() {
+		stats.initReporter();
+	});
 });
 
 chrome.storage.onChanged.addListener(function () {
