@@ -997,7 +997,7 @@
             return null == e ? e : e = (e = (e = (e = (e = (e = e.trim()).replace(/ /g, "%20")).replace(/\xa0/g, "%C2%A0")).replace(/\n/g, "%0A")).replace(/\r/g, "%0D")).replace(/\t/g, "%09");
         }
         static isExtensionUrl(e) {
-            return e.startsWith("chrome-extension://");
+            return !!e && e.startsWith("chrome-extension://");
         }
     }
     t.default = n;
