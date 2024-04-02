@@ -77,7 +77,8 @@ chrome.runtime.onMessage.addListener(
 				sitemap: sitemap,
 				browser: browser,
 				store: store,
-				requestInterval: request.requestInterval
+				requestInterval: request.requestInterval,
+				stats: stats
 			});
 
 			try {

@@ -6,6 +6,7 @@ Scraper = function (options) {
 	this.resultWriter = null; // db instance for scraped data writing
 	this.requestInterval = parseInt(options.requestInterval);
 	this.pageLoadDelay = parseInt(options.pageLoadDelay);
+	this.stats = options.stats;
 };
 
 Scraper.prototype = {
@@ -141,6 +142,10 @@ Scraper.prototype = {
 			console.log("Scraper execution is finished");
 			this.executionCallback();
 			return;
+		}
+
+		if(this.stats) {
+			stats.incrementDailyStat("pagesScraped");
 		}
 
 		job.execute(this.browser, function (job) {

@@ -12,8 +12,8 @@ var Stats = function (options) {
 	this.usageStartTimes = {};
 
 	var day = 1000 * 60 * 60 * 24;
-	this.randomFirstReportInMs = options.randomFirstReportInMs || 5 * day;
-	this.reportInMs = options.reportInMs || 6 * day;
+	this.randomFirstReportInMs = options.randomFirstReportInMs || 2 * day;
+	this.reportInMs = options.reportInMs || 3 * day;
 	this.potentialSubmitIntervalMs = options.potentialSubmitIntervalMs || 5*60e3;
 };
 
@@ -31,13 +31,30 @@ Stats.prototype = {
 			d = new Date(time);
 		}
 
-		return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+		var month = ("0"+(d.getMonth()+1)).substr(-2);
+		var day = ("0"+d.getDate()).substr(-2);
+
+		return d.getFullYear() + '-' + month + '-' + day;
 	},
 
 	initStats: function () {
 
 		return this.initIndexedDbConnection()
-			.then(this.initDailyStats.bind(this));
+			.then(function () {
+				return this.getLastTimeStatsReported();
+			}.bind(this))
+			.then(function (lastTimeStatsReported) {
+				this.lastTimeStatsReported = lastTimeStatsReported;
+			}.bind(this))
+			.then(function () {
+				return this.getStatId();
+			}.bind(this))
+			.then(function (statId) {
+				this.statId = statId;
+			}.bind(this))
+			.then(function () {
+				return this.initDailyStats();
+			}.bind(this));
 	},
 
 	initIndexedDbConnection: function () {
@@ -144,8 +161,10 @@ Stats.prototype = {
 	initDailyStatDate: function (date) {
 		if (this.dailyStats[date] === undefined) {
 			this.dailyStats[date] = {
+				"statId" : this.statId,
 				"date": date,
 				"scrapingJobsRun": 0,
+				"pagesScraped": 0,
 				"sitemapsCreated": 0,
 				"sitemapsDeleted": 0,
 				"sitemapsImported": 0,
@@ -186,6 +205,9 @@ Stats.prototype = {
 
 		var date = this.getDate();
 		this.initDailyStatDate(date);
+		if(!this.dailyStats[date][key]) {
+			this.dailyStats[date][key] = 0;
+		}
 		this.dailyStats[date][key] += increment;
 		return this.updateDailyStats();
 	},
@@ -253,6 +275,7 @@ Stats.prototype = {
 			var couchDbUsed = this.config.storageType !== 'local';
 
 			var stats = {
+				"statId": this.statId,
 				"couchDBUsed": couchDbUsed,
 				"sitemapCount": 0,
 				"selectorCountPerSitemap": {
@@ -426,15 +449,46 @@ Stats.prototype = {
 			var timeLastReported = Math.round(time - Math.random() * this.randomFirstReportInMs);
 
 			// store the random time in db
-			return this.setLastTimeStatsReported(timeLastReported);
+			return this.setLastTimeStatsReported(timeLastReported).then(function () {
+				return time;
+			});
 		}.bind(this));
 	},
 
 	setLastTimeStatsReported: function (time) {
-		// store the random time in db
+
+		this.lastTimeStatsReported = time;
+
+		// store this in db
 		return this.indexedDbPut('reporter', {
 			timeLastReported: time
 		});
+	},
+
+	getStatId: function () {
+
+		return this.indexedDbGet("statId").then(function (doc) {
+
+			// already was in db
+			if (doc.statId !== undefined) {
+				return doc.statId;
+			}
+
+			// first time fetching. generate a random string
+			var statId = "";
+			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+			for (var i = 1; i <= 60; i++) {
+				statId += possible.charAt(Math.floor(Math.random() * possible.length));
+			}
+
+			// store this in db
+			return this.indexedDbPut('statId', {
+				statId: statId
+			}).then(function () {
+				return statId;
+			}.bind(this));
+		}.bind(this));
 	},
 
 	initReporter: function () {
@@ -443,33 +497,28 @@ Stats.prototype = {
 
 		this.stopReporter();
 
-		this.getLastTimeStatsReported()
-			.then(function (lastTimeStatsReported) {
+		// start submission engine
+		statsReporterInterval = setInterval(function () {
 
-				// start submission engine
-				statsReporterInterval = setInterval(function () {
+			// check whether we need to report stats
+			var time = Date.now();
+			if (this.lastTimeStatsReported + this.reportInMs >= time) {
+				return;
+			}
 
-					// check whether we need to report stats
-					var time = Date.now();
-					if (lastTimeStatsReported + this.reportInMs >= time) {
-						return;
-					}
+			// now is the time to report stats
+			this.reportStats()
+				.then(function () {
+					// update stats have been reported
+					var lastTimeStatsReported = Date.now();
+					return this.setLastTimeStatsReported(lastTimeStatsReported);
+				}.bind(this))
+				.then(function () {
+					// reset daily stats
+					this.resetDailyStats();
+				}.bind(this))
 
-					// now is the time to report stats
-					this.reportStats()
-						.then(function () {
-							// update stats have been reported
-							lastTimeStatsReported = Date.now();
-							return this.setLastTimeStatsReported(lastTimeStatsReported);
-						}.bind(this))
-						.then(function () {
-							// reset daily stats
-							this.resetDailyStats();
-						}.bind(this))
-
-				}.bind(this), this.potentialSubmitIntervalMs);
-
-			}.bind(this));
+		}.bind(this), this.potentialSubmitIntervalMs);
 	},
 
 	stopReporter: function () {
