@@ -40,9 +40,9 @@
         return n.d(t, "a", t), t;
     }, n.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t);
-    }, n.p = "", n(n.s = 562);
+    }, n.p = "", n(n.s = 498);
 }({
-    562: function(e, t) {
+    498: function(e, t) {
         document.getElementById("enable-experimental-features").onclick = () => {
             chrome.runtime.sendMessage({
                 method: "setExperimentalFeaturesEnabled",

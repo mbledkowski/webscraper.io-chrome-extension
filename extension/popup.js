@@ -40,9 +40,9 @@
         return r.d(t, "a", t), t;
     }, r.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t);
-    }, r.p = "", r(r.s = 563);
+    }, r.p = "", r(r.s = 499);
 }({
-    563: function(e, t) {
+    499: function(e, t) {
         navigator.platform.indexOf("Linux") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("linux") : navigator.platform.indexOf("Mac") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("mac") : navigator.platform.indexOf("Win") > -1 ? document.querySelectorAll(".open-web-scraper")[0].classList.add("windows") : document.querySelectorAll(".open-web-scraper")[0].classList.add("other"), 
         1 === Math.round(Math.random()) ? document.querySelector(".btn-primary.test-a").classList.remove("hide") : document.querySelector(".btn-primary.test-b").classList.remove("hide");
     }

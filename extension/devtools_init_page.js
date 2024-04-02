@@ -40,9 +40,9 @@
         return r.d(t, "a", t), t;
     }, r.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t);
-    }, r.p = "", r(r.s = 540);
+    }, r.p = "", r(r.s = 476);
 }({
-    540: function(e, t) {
+    476: function(e, t) {
         chrome.devtools.panels.create("Web Scraper", "images/icon48.png", "devtools_web_scraper_panel.html");
     }
 });

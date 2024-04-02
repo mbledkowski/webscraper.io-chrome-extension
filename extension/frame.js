@@ -41,18 +41,560 @@
         return n.d(t, "a", t), t;
     }, n.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t);
-    }, n.p = "", n(n.s = 541);
+    }, n.p = "", n(n.s = 477);
 }({
     0: function(e, t, n) {
         "use strict";
-        e.exports = n(138);
+        e.exports = n(86);
     },
-    134: function(e, t, n) {
+    13: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        }), function(e) {
+            e.error = "error", e.apply = "apply", e.response = "response";
+        }(t.Actions || (t.Actions = {}));
+    },
+    15: function(e, t, n) {
         "use strict";
         Object.defineProperty(t, "__esModule", {
             value: !0
         });
-        const r = n(135);
+        class r {
+            static getMessage(e) {
+                return "string" == typeof e ? e : e && "object" == typeof e && e.message && "string" == typeof e.message ? e.message : null == e ? "missing error" : e.toString();
+            }
+            static startsWith(e, t) {
+                return "string" == typeof e ? e.startsWith(t) : !(!e || "object" != typeof e || !e.message || "string" != typeof e.message) && e.message.startsWith(t);
+            }
+            static startsWithAnyOf(e, t) {
+                for (const n of t) if (r.startsWith(e, n)) return !0;
+                return !1;
+            }
+            static includesAnyOf(e, t) {
+                for (const n of t) if (r.includes(e, n)) return !0;
+                return !1;
+            }
+            static includes(e, t) {
+                if (null == e) return !1;
+                return r.getMessage(e).includes(t);
+            }
+        }
+        t.default = r;
+    },
+    182: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        }), t.keyEventHandler = function(e) {
+            return t => {
+                const {code: n} = t;
+                n in e && e[n](t);
+            };
+        };
+    },
+    30: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        t.BackgroundEvent = class {
+            constructor() {
+                this.callbacks = [];
+            }
+            call(...e) {
+                this.callbacks.forEach(t => t(...e));
+            }
+            addListener(e) {
+                this.callbacks.push(e);
+            }
+            removeListener(e) {
+                for (const t in this.callbacks) if (this.callbacks[t] === e) {
+                    delete this.callbacks[t];
+                    break;
+                }
+            }
+        };
+    },
+    39: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const r = n(13), l = n(49), i = n(43);
+        t.EndpointBase = class {
+            constructor(e, t) {
+                this.receive = this.receive.bind(this), this.callbacks = t, this.name = e, this.pendingMessages = {}, 
+                this.port = this.initPort(), this.port.onMessage.addListener(this.receive), this.messageIdIncrement = 0;
+            }
+            send(e, t, n) {
+                const r = this.messageIdIncrement;
+                return this.messageIdIncrement++, this.port.postMessage({
+                    action: e,
+                    callId: r,
+                    payload: n,
+                    target: {
+                        local: t
+                    },
+                    sender: {
+                        local: this.name
+                    }
+                }), new Promise((e, t) => {
+                    this.pendingMessages[r] = {
+                        accept: e,
+                        reject: t
+                    };
+                });
+            }
+            receive(e, t) {
+                const {lastError: n} = chrome.runtime, {payload: l, action: i} = e;
+                if (n) throw new Error("Error during message passing: " + n.message);
+                if (i === r.Actions.error) throw new Error(`${l.type} in endpoint ${this.name}: ${l.message}`);
+                if (i !== r.Actions.response) {
+                    if (void 0 === i) throw new Error("Message without action received");
+                    if ("function" != typeof this.callbacks[i]) throw new Error("Incorrect action mapping for action: " + i);
+                } else this.handleMessageResponse(e);
+            }
+            postResponse(e, t) {
+                this.port.postMessage({
+                    action: r.Actions.response,
+                    target: e,
+                    sender: {
+                        local: this.name
+                    },
+                    callId: t.callId,
+                    payload: t
+                });
+            }
+            handleMessageResponse(e) {
+                const {payload: {callId: t, success: n, responsePayload: r}} = e;
+                t in this.pendingMessages && (n ? this.pendingMessages[t].accept(r) : this.pendingMessages[t].reject(new Error(r)), 
+                delete this.pendingMessages[t]);
+            }
+            initPort() {
+                const {name: e} = this;
+                if (l.inBackgroundContext()) {
+                    return (new i.InternalRuntime).connect({
+                        name: e
+                    });
+                }
+                return chrome.runtime.connect({
+                    name: e
+                });
+            }
+        };
+    },
+    40: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        }), function(e) {
+            e.backgroundScript = "backgroundScript", e.highlightOverlay = "highlightOverlay", 
+            e.uiOverlay = "uiOverlay", e.selection = "selection", e.config = "config";
+        }(t.Targets || (t.Targets = {}));
+    },
+    43: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const r = n(30), l = n(50);
+        class i {
+            constructor(e = !1) {
+                return i.instance && !e ? i.instance : (this.onConnect = new r.BackgroundEvent, 
+                i.instance = this, this);
+            }
+            connect({name: e}) {
+                const {client: t, runtime: n} = l.portFactory(e);
+                return this.onConnect.call(n), t;
+            }
+        }
+        t.InternalRuntime = i;
+    },
+    47: function(e, t, n) {
+        "use strict";
+        var r = Object.getOwnPropertySymbols, l = Object.prototype.hasOwnProperty, i = Object.prototype.propertyIsEnumerable;
+        function a(e) {
+            if (null == e) throw new TypeError("Object.assign cannot be called with null or undefined");
+            return Object(e);
+        }
+        e.exports = function() {
+            try {
+                if (!Object.assign) return !1;
+                var e = new String("abc");
+                if (e[5] = "de", "5" === Object.getOwnPropertyNames(e)[0]) return !1;
+                for (var t = {}, n = 0; n < 10; n++) t["_" + String.fromCharCode(n)] = n;
+                if ("0123456789" !== Object.getOwnPropertyNames(t).map((function(e) {
+                    return t[e];
+                })).join("")) return !1;
+                var r = {};
+                return "abcdefghijklmnopqrst".split("").forEach((function(e) {
+                    r[e] = e;
+                })), "abcdefghijklmnopqrst" === Object.keys(Object.assign({}, r)).join("");
+            } catch (e) {
+                return !1;
+            }
+        }() ? Object.assign : function(e, t) {
+            for (var n, o, u = a(e), c = 1; c < arguments.length; c++) {
+                for (var s in n = Object(arguments[c])) l.call(n, s) && (u[s] = n[s]);
+                if (r) {
+                    o = r(n);
+                    for (var f = 0; f < o.length; f++) i.call(n, o[f]) && (u[o[f]] = n[o[f]]);
+                }
+            }
+            return u;
+        };
+    },
+    477: function(e, t, n) {
+        "use strict";
+        var r = this && this.__awaiter || function(e, t, n, r) {
+            return new (n || (n = Promise))((function(l, i) {
+                function a(e) {
+                    try {
+                        u(r.next(e));
+                    } catch (e) {
+                        i(e);
+                    }
+                }
+                function o(e) {
+                    try {
+                        u(r.throw(e));
+                    } catch (e) {
+                        i(e);
+                    }
+                }
+                function u(e) {
+                    var t;
+                    e.done ? l(e.value) : (t = e.value, t instanceof n ? t : new n((function(e) {
+                        e(t);
+                    }))).then(a, o);
+                }
+                u((r = r.apply(e, t || [])).next());
+            }));
+        };
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const l = n(0), i = n(5), a = n(478);
+        r(void 0, void 0, void 0, (function*() {
+            i.render(l.createElement(a.Toolbar, null), document.getElementById("app"));
+        }));
+    },
+    478: function(e, t, n) {
+        "use strict";
+        var r = this && this.__decorate || function(e, t, n, r) {
+            var l, i = arguments.length, a = i < 3 ? t : null === r ? r = Object.getOwnPropertyDescriptor(t, n) : r;
+            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) a = Reflect.decorate(e, t, n, r); else for (var o = e.length - 1; o >= 0; o--) (l = e[o]) && (a = (i < 3 ? l(a) : i > 3 ? l(t, n, a) : l(t, n)) || a);
+            return i > 3 && a && Object.defineProperty(t, n, a), a;
+        }, l = this && this.__metadata || function(e, t) {
+            if ("object" == typeof Reflect && "function" == typeof Reflect.metadata) return Reflect.metadata(e, t);
+        }, i = this && this.__awaiter || function(e, t, n, r) {
+            return new (n || (n = Promise))((function(l, i) {
+                function a(e) {
+                    try {
+                        u(r.next(e));
+                    } catch (e) {
+                        i(e);
+                    }
+                }
+                function o(e) {
+                    try {
+                        u(r.throw(e));
+                    } catch (e) {
+                        i(e);
+                    }
+                }
+                function u(e) {
+                    var t;
+                    e.done ? l(e.value) : (t = e.value, t instanceof n ? t : new n((function(e) {
+                        e(t);
+                    }))).then(a, o);
+                }
+                u((r = r.apply(e, t || [])).next());
+            }));
+        };
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const a = n(0), o = n(59), u = n(40), c = n(82), s = n(182);
+        let f = class extends a.Component {
+            constructor(e, t) {
+                super(e, t), this.keysDisabledMessage = "Click here to enable hotkeys", this.highlightOverlayService = c.serviceFactory(u.Targets.highlightOverlay), 
+                this.selectionService = c.serviceFactory(u.Targets.selection), this.onSelectParent = this.onSelectParent.bind(this), 
+                this.onSelectChild = this.onSelectChild.bind(this), this.onSelectElement = this.onSelectElement.bind(this), 
+                this.handleFocusChange = this.handleFocusChange.bind(this), this.onFocus = this.onFocus.bind(this), 
+                this.onBlur = this.onBlur.bind(this), this.keyDownHandler = s.keyEventHandler({
+                    KeyP: this.onSelectParent,
+                    KeyC: this.onSelectChild,
+                    KeyS: this.onSelectElement
+                }), this.state = {
+                    selector: "",
+                    joinSelectAllowed: !1,
+                    keyBoardEventsEnabled: !1,
+                    parentHasFocus: !1,
+                    uiHasFocus: !1
+                }, this.onSubmit = this.onSubmit.bind(this);
+            }
+            componentDidMount() {
+                return i(this, void 0, void 0, (function*() {
+                    this.toggleBaseEvents(!0), this.setState({
+                        notification: this.keysDisabledMessage
+                    });
+                }));
+            }
+            componentWillUnmount() {
+                this.toggleBaseEvents(!1);
+            }
+            render() {
+                const {notification: e} = this.state, t = void 0 !== e;
+                return a.createElement("div", {
+                    className: "toolbar-container panel panel-default"
+                }, a.createElement("div", {
+                    className: "panel-body"
+                }, t && this.notification, !t && this.selectorInput, !t && this.controls, a.createElement("div", {
+                    className: "col-xs-4 container submit-container"
+                }, a.createElement("button", {
+                    id: "submit-selector",
+                    className: "btn btn-success",
+                    onClick: this.onSubmit
+                }, "Done selecting"))));
+            }
+            setSelector(e) {
+                return this.setState({
+                    selector: e,
+                    notification: void 0
+                }), Promise.resolve();
+            }
+            setNotification(e) {
+                return this.setState({
+                    notification: e
+                }), Promise.resolve();
+            }
+            changeInFocus(e) {
+                return this.handleFocusChange(e, this.state.uiHasFocus), Promise.resolve();
+            }
+            get notification() {
+                return a.createElement("div", {
+                    className: "col-xs-8 container alert-container",
+                    onClick: () => this.setState({
+                        notification: void 0
+                    })
+                }, a.createElement("div", {
+                    className: "alert alert-info"
+                }, a.createElement("span", null, this.state.notification)));
+            }
+            get selectorInput() {
+                return a.createElement("div", {
+                    className: "col-xs-5 container selector-container"
+                }, a.createElement("input", {
+                    id: "active-selection",
+                    className: "form-control",
+                    disabled: !0,
+                    type: "text",
+                    value: this.state.selector
+                }));
+            }
+            get controls() {
+                return a.createElement("div", {
+                    id: "dom-controls",
+                    tabIndex: 0,
+                    className: "col-xs-3 container"
+                }, this.keyboardControls);
+            }
+            get keyboardControls() {
+                return a.createElement("div", {
+                    className: "container"
+                }, this.renderDOMControl("parent", "P", "Press P to select parent element", this.onSelectParent), this.renderDOMControl("child", "C", "Press C to select child element", this.onSelectChild), this.renderDOMControl("element", "S", "Press S to select hovered element", () => {}, !0));
+            }
+            renderDOMControl(e, t, n, r, l) {
+                return a.createElement("div", {
+                    className: "col-xs-4 container dom-control-container"
+                }, a.createElement("button", {
+                    id: "select-" + e,
+                    className: "btn btn-primary",
+                    title: n,
+                    onClick: r,
+                    disabled: l || !this.state.keyBoardEventsEnabled
+                }, t));
+            }
+            toggleBaseEvents(e) {
+                const t = e ? "addEventListener" : "removeEventListener";
+                window[t]("focus", this.onFocus), window[t]("blur", this.onBlur), document[t]("keydown", this.keyDownHandler);
+            }
+            onSelectParent() {
+                return this.highlightOverlayService.selectParent();
+            }
+            onSelectChild() {
+                return this.highlightOverlayService.selectChild();
+            }
+            onSelectElement(e) {
+                return this.highlightOverlayService.onElementSelect({
+                    shiftKey: e.shiftKey
+                });
+            }
+            onSubmit(e) {
+                return e.preventDefault(), e.stopPropagation(), this.selectionService.lockActive();
+            }
+            onFocus() {
+                return this.handleFocusChange(this.state.parentHasFocus, !0);
+            }
+            onBlur() {
+                return this.handleFocusChange(this.state.parentHasFocus, !1);
+            }
+            handleFocusChange(e, t) {
+                const n = e || t, {notification: r} = this.state, l = n && r === this.keysDisabledMessage ? void 0 : r;
+                this.setState({
+                    keyBoardEventsEnabled: n,
+                    parentHasFocus: e,
+                    uiHasFocus: t,
+                    notification: l
+                });
+            }
+        };
+        f = r([ o.applyController(u.Targets.uiOverlay), l("design:paramtypes", [ Object, Object ]) ], f), 
+        t.Toolbar = f;
+    },
+    49: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        }), t.inBackgroundContext = function() {
+            return chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
+        };
+    },
+    5: function(e, t, n) {
+        "use strict";
+        !function e() {
+            if ("undefined" != typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" == typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE) {
+                0;
+                try {
+                    __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(e);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }(), e.exports = n(87);
+    },
+    50: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const r = n(51);
+        function l(e) {
+            return t => {
+                t = JSON.parse(JSON.stringify(t)), e.onMessage.call(t, e);
+            };
+        }
+        t.portFactory = function(e) {
+            const t = new r.BackgroundPort(e), n = new r.BackgroundPort(e);
+            return t.orchestratorOnMessage = l(n), n.orchestratorOnMessage = l(t), {
+                client: t,
+                runtime: n
+            };
+        };
+    },
+    51: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const r = n(30);
+        t.BackgroundPort = class {
+            constructor(e) {
+                this.name = e, this.onMessage = new r.BackgroundEvent;
+            }
+            postMessage(e) {
+                this.orchestratorOnMessage(e);
+            }
+        };
+    },
+    59: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const r = n(72), l = n(13);
+        t.applyController = function(e) {
+            return t => class extends t {
+                constructor() {
+                    super(...arguments), this.enpoint = new r.Incoming(e, {
+                        [l.Actions.apply]: this.passToFunction.bind(this)
+                    });
+                }
+                passToFunction(e) {
+                    const {functionName: t, functionArguments: n} = e;
+                    return "function" == typeof this[t] ? this[t](...n) : Promise.reject(`Function ${t} does not exist on ${typeof this}`);
+                }
+            };
+        };
+    },
+    72: function(e, t, n) {
+        "use strict";
+        var r = this && this.__awaiter || function(e, t, n, r) {
+            return new (n || (n = Promise))((function(l, i) {
+                function a(e) {
+                    try {
+                        u(r.next(e));
+                    } catch (e) {
+                        i(e);
+                    }
+                }
+                function o(e) {
+                    try {
+                        u(r.throw(e));
+                    } catch (e) {
+                        i(e);
+                    }
+                }
+                function u(e) {
+                    var t;
+                    e.done ? l(e.value) : (t = e.value, t instanceof n ? t : new n((function(e) {
+                        e(t);
+                    }))).then(a, o);
+                }
+                u((r = r.apply(e, t || [])).next());
+            }));
+        };
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const l = n(39), i = n(13), a = n(15);
+        class o extends l.EndpointBase {
+            receive(e, t) {
+                super.receive(e, t);
+                const {action: n} = e;
+                n !== i.Actions.response && this.handleCallback(e);
+            }
+            handleCallback(e) {
+                return r(this, void 0, void 0, (function*() {
+                    const {payload: t, action: n, callId: r, sender: l} = e;
+                    try {
+                        const e = {
+                            callId: r,
+                            success: !0,
+                            responsePayload: yield this.callbacks[n](t)
+                        };
+                        this.postResponse(l, e);
+                    } catch (e) {
+                        const t = {
+                            callId: r,
+                            success: !1,
+                            responsePayload: a.default.getMessage(e)
+                        };
+                        this.postResponse(l, t);
+                    }
+                }));
+            }
+        }
+        t.Incoming = o;
+    },
+    82: function(e, t, n) {
+        "use strict";
+        Object.defineProperty(t, "__esModule", {
+            value: !0
+        });
+        const r = n(83);
         function l(e) {
             return (...t) => this.sendApply(e, t);
         }
@@ -63,12 +605,12 @@
             });
         };
     },
-    135: function(e, t, n) {
+    83: function(e, t, n) {
         "use strict";
         Object.defineProperty(t, "__esModule", {
             value: !0
         });
-        const r = n(136);
+        const r = n(84);
         t.Service = class {
             constructor(e) {
                 this.target = e, this.endpoint = new r.Outgoing(e);
@@ -78,12 +620,12 @@
             }
         };
     },
-    136: function(e, t, n) {
+    84: function(e, t, n) {
         "use strict";
         Object.defineProperty(t, "__esModule", {
             value: !0
         });
-        const r = n(44), l = n(16);
+        const r = n(39), l = n(13);
         class i extends r.EndpointBase {
             constructor(e) {
                 super((new Date).valueOf().toString(), {}), this.defaultTarget = e;
@@ -97,9 +639,9 @@
         }
         t.Outgoing = i;
     },
-    138: function(e, t, n) {
+    86: function(e, t, n) {
         "use strict";
-        var r = n(52), l = "function" == typeof Symbol && Symbol.for, i = l ? Symbol.for("react.element") : 60103, a = l ? Symbol.for("react.portal") : 60106, o = l ? Symbol.for("react.fragment") : 60107, u = l ? Symbol.for("react.strict_mode") : 60108, c = l ? Symbol.for("react.profiler") : 60114, s = l ? Symbol.for("react.provider") : 60109, f = l ? Symbol.for("react.context") : 60110, d = l ? Symbol.for("react.forward_ref") : 60112, p = l ? Symbol.for("react.suspense") : 60113;
+        var r = n(47), l = "function" == typeof Symbol && Symbol.for, i = l ? Symbol.for("react.element") : 60103, a = l ? Symbol.for("react.portal") : 60106, o = l ? Symbol.for("react.fragment") : 60107, u = l ? Symbol.for("react.strict_mode") : 60108, c = l ? Symbol.for("react.profiler") : 60114, s = l ? Symbol.for("react.provider") : 60109, f = l ? Symbol.for("react.context") : 60110, d = l ? Symbol.for("react.forward_ref") : 60112, p = l ? Symbol.for("react.suspense") : 60113;
         l && Symbol.for("react.suspense_list");
         var h = l ? Symbol.for("react.memo") : 60115, m = l ? Symbol.for("react.lazy") : 60116;
         l && Symbol.for("react.fundamental"), l && Symbol.for("react.responder"), l && Symbol.for("react.scope");
@@ -396,9 +938,9 @@
         }, W = B && A || B;
         e.exports = W.default || W;
     },
-    139: function(e, t, n) {
+    87: function(e, t, n) {
         "use strict";
-        var r = n(0), l = n(52), i = n(140);
+        var r = n(0), l = n(47), i = n(88);
         function a(e) {
             for (var t = "https://reactjs.org/docs/error-decoder.html?invariant=" + e, n = 1; n < arguments.length; n++) t += "&args[]=" + encodeURIComponent(arguments[n]);
             return "Minified React error #" + e + "; visit " + t + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
@@ -5456,11 +5998,11 @@
         }, tc = ec && Zu || ec;
         e.exports = tc.default || tc;
     },
-    140: function(e, t, n) {
+    88: function(e, t, n) {
         "use strict";
-        e.exports = n(141);
+        e.exports = n(89);
     },
-    141: function(e, t, n) {
+    89: function(e, t, n) {
         "use strict";
         var r, l, i, a, o;
         if (Object.defineProperty(t, "__esModule", {
@@ -5698,547 +6240,5 @@
         }, t.unstable_pauseExecution = function() {}, t.unstable_getFirstCallbackNode = function() {
             return C(N);
         }, t.unstable_Profiling = null;
-    },
-    16: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        }), function(e) {
-            e.error = "error", e.apply = "apply", e.response = "response";
-        }(t.Actions || (t.Actions = {}));
-    },
-    182: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        }), t.keyEventHandler = function(e) {
-            return t => {
-                const {code: n} = t;
-                n in e && e[n](t);
-            };
-        };
-    },
-    23: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        class r {
-            static getMessage(e) {
-                return "string" == typeof e ? e : e && "object" == typeof e && e.message && "string" == typeof e.message ? e.message : null == e ? "missing error" : e.toString();
-            }
-            static startsWith(e, t) {
-                return "string" == typeof e ? e.startsWith(t) : !(!e || "object" != typeof e || !e.message || "string" != typeof e.message) && e.message.startsWith(t);
-            }
-            static startsWithAnyOf(e, t) {
-                for (const n of t) if (r.startsWith(e, n)) return !0;
-                return !1;
-            }
-            static includesAnyOf(e, t) {
-                for (const n of t) if (r.includes(e, n)) return !0;
-                return !1;
-            }
-            static includes(e, t) {
-                if (null == e) return !1;
-                return r.getMessage(e).includes(t);
-            }
-        }
-        t.default = r;
-    },
-    35: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        t.BackgroundEvent = class {
-            constructor() {
-                this.callbacks = [];
-            }
-            call(...e) {
-                this.callbacks.forEach(t => t(...e));
-            }
-            addListener(e) {
-                this.callbacks.push(e);
-            }
-            removeListener(e) {
-                for (const t in this.callbacks) if (this.callbacks[t] === e) {
-                    delete this.callbacks[t];
-                    break;
-                }
-            }
-        };
-    },
-    44: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const r = n(16), l = n(53), i = n(46);
-        t.EndpointBase = class {
-            constructor(e, t) {
-                this.receive = this.receive.bind(this), this.callbacks = t, this.name = e, this.pendingMessages = {}, 
-                this.port = this.initPort(), this.port.onMessage.addListener(this.receive), this.messageIdIncrement = 0;
-            }
-            send(e, t, n) {
-                const r = this.messageIdIncrement;
-                return this.messageIdIncrement++, this.port.postMessage({
-                    action: e,
-                    callId: r,
-                    payload: n,
-                    target: {
-                        local: t
-                    },
-                    sender: {
-                        local: this.name
-                    }
-                }), new Promise((e, t) => {
-                    this.pendingMessages[r] = {
-                        accept: e,
-                        reject: t
-                    };
-                });
-            }
-            receive(e, t) {
-                const {lastError: n} = chrome.runtime, {payload: l, action: i} = e;
-                if (n) throw new Error("Error during message passing: " + n.message);
-                if (i === r.Actions.error) throw new Error(`${l.type} in endpoint ${this.name}: ${l.message}`);
-                if (i !== r.Actions.response) {
-                    if (void 0 === i) throw new Error("Message without action received");
-                    if ("function" != typeof this.callbacks[i]) throw new Error("Incorrect action mapping for action: " + i);
-                } else this.handleMessageResponse(e);
-            }
-            postResponse(e, t) {
-                this.port.postMessage({
-                    action: r.Actions.response,
-                    target: e,
-                    sender: {
-                        local: this.name
-                    },
-                    callId: t.callId,
-                    payload: t
-                });
-            }
-            handleMessageResponse(e) {
-                const {payload: {callId: t, success: n, responsePayload: r}} = e;
-                t in this.pendingMessages && (n ? this.pendingMessages[t].accept(r) : this.pendingMessages[t].reject(new Error(r)), 
-                delete this.pendingMessages[t]);
-            }
-            initPort() {
-                const {name: e} = this;
-                if (l.inBackgroundContext()) {
-                    return (new i.InternalRuntime).connect({
-                        name: e
-                    });
-                }
-                return chrome.runtime.connect({
-                    name: e
-                });
-            }
-        };
-    },
-    45: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        }), function(e) {
-            e.backgroundScript = "backgroundScript", e.highlightOverlay = "highlightOverlay", 
-            e.uiOverlay = "uiOverlay", e.selection = "selection", e.config = "config";
-        }(t.Targets || (t.Targets = {}));
-    },
-    46: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const r = n(35), l = n(54);
-        class i {
-            constructor(e = !1) {
-                return i.instance && !e ? i.instance : (this.onConnect = new r.BackgroundEvent, 
-                i.instance = this, this);
-            }
-            connect({name: e}) {
-                const {client: t, runtime: n} = l.portFactory(e);
-                return this.onConnect.call(n), t;
-            }
-        }
-        t.InternalRuntime = i;
-    },
-    52: function(e, t, n) {
-        "use strict";
-        var r = Object.getOwnPropertySymbols, l = Object.prototype.hasOwnProperty, i = Object.prototype.propertyIsEnumerable;
-        function a(e) {
-            if (null == e) throw new TypeError("Object.assign cannot be called with null or undefined");
-            return Object(e);
-        }
-        e.exports = function() {
-            try {
-                if (!Object.assign) return !1;
-                var e = new String("abc");
-                if (e[5] = "de", "5" === Object.getOwnPropertyNames(e)[0]) return !1;
-                for (var t = {}, n = 0; n < 10; n++) t["_" + String.fromCharCode(n)] = n;
-                if ("0123456789" !== Object.getOwnPropertyNames(t).map((function(e) {
-                    return t[e];
-                })).join("")) return !1;
-                var r = {};
-                return "abcdefghijklmnopqrst".split("").forEach((function(e) {
-                    r[e] = e;
-                })), "abcdefghijklmnopqrst" === Object.keys(Object.assign({}, r)).join("");
-            } catch (e) {
-                return !1;
-            }
-        }() ? Object.assign : function(e, t) {
-            for (var n, o, u = a(e), c = 1; c < arguments.length; c++) {
-                for (var s in n = Object(arguments[c])) l.call(n, s) && (u[s] = n[s]);
-                if (r) {
-                    o = r(n);
-                    for (var f = 0; f < o.length; f++) i.call(n, o[f]) && (u[o[f]] = n[o[f]]);
-                }
-            }
-            return u;
-        };
-    },
-    53: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        }), t.inBackgroundContext = function() {
-            return chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
-        };
-    },
-    54: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const r = n(55);
-        function l(e) {
-            return t => {
-                t = JSON.parse(JSON.stringify(t)), e.onMessage.call(t, e);
-            };
-        }
-        t.portFactory = function(e) {
-            const t = new r.BackgroundPort(e), n = new r.BackgroundPort(e);
-            return t.orchestratorOnMessage = l(n), n.orchestratorOnMessage = l(t), {
-                client: t,
-                runtime: n
-            };
-        };
-    },
-    541: function(e, t, n) {
-        "use strict";
-        var r = this && this.__awaiter || function(e, t, n, r) {
-            return new (n || (n = Promise))((function(l, i) {
-                function a(e) {
-                    try {
-                        u(r.next(e));
-                    } catch (e) {
-                        i(e);
-                    }
-                }
-                function o(e) {
-                    try {
-                        u(r.throw(e));
-                    } catch (e) {
-                        i(e);
-                    }
-                }
-                function u(e) {
-                    var t;
-                    e.done ? l(e.value) : (t = e.value, t instanceof n ? t : new n((function(e) {
-                        e(t);
-                    }))).then(a, o);
-                }
-                u((r = r.apply(e, t || [])).next());
-            }));
-        };
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const l = n(0), i = n(8), a = n(542);
-        r(void 0, void 0, void 0, (function*() {
-            i.render(l.createElement(a.Toolbar, null), document.getElementById("app"));
-        }));
-    },
-    542: function(e, t, n) {
-        "use strict";
-        var r = this && this.__decorate || function(e, t, n, r) {
-            var l, i = arguments.length, a = i < 3 ? t : null === r ? r = Object.getOwnPropertyDescriptor(t, n) : r;
-            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) a = Reflect.decorate(e, t, n, r); else for (var o = e.length - 1; o >= 0; o--) (l = e[o]) && (a = (i < 3 ? l(a) : i > 3 ? l(t, n, a) : l(t, n)) || a);
-            return i > 3 && a && Object.defineProperty(t, n, a), a;
-        }, l = this && this.__metadata || function(e, t) {
-            if ("object" == typeof Reflect && "function" == typeof Reflect.metadata) return Reflect.metadata(e, t);
-        }, i = this && this.__awaiter || function(e, t, n, r) {
-            return new (n || (n = Promise))((function(l, i) {
-                function a(e) {
-                    try {
-                        u(r.next(e));
-                    } catch (e) {
-                        i(e);
-                    }
-                }
-                function o(e) {
-                    try {
-                        u(r.throw(e));
-                    } catch (e) {
-                        i(e);
-                    }
-                }
-                function u(e) {
-                    var t;
-                    e.done ? l(e.value) : (t = e.value, t instanceof n ? t : new n((function(e) {
-                        e(t);
-                    }))).then(a, o);
-                }
-                u((r = r.apply(e, t || [])).next());
-            }));
-        };
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const a = n(0), o = n(62), u = n(45), c = n(134), s = n(182);
-        let f = class extends a.Component {
-            constructor(e, t) {
-                super(e, t), this.keysDisabledMessage = "Click here to enable hotkeys", this.highlightOverlayService = c.serviceFactory(u.Targets.highlightOverlay), 
-                this.selectionService = c.serviceFactory(u.Targets.selection), this.onSelectParent = this.onSelectParent.bind(this), 
-                this.onSelectChild = this.onSelectChild.bind(this), this.onSelectElement = this.onSelectElement.bind(this), 
-                this.handleFocusChange = this.handleFocusChange.bind(this), this.onFocus = this.onFocus.bind(this), 
-                this.onBlur = this.onBlur.bind(this), this.keyDownHandler = s.keyEventHandler({
-                    KeyP: this.onSelectParent,
-                    KeyC: this.onSelectChild,
-                    KeyS: this.onSelectElement
-                }), this.state = {
-                    selector: "",
-                    joinSelectAllowed: !1,
-                    keyBoardEventsEnabled: !1,
-                    parentHasFocus: !1,
-                    uiHasFocus: !1
-                }, this.onSubmit = this.onSubmit.bind(this);
-            }
-            componentDidMount() {
-                return i(this, void 0, void 0, (function*() {
-                    this.toggleBaseEvents(!0), this.setState({
-                        notification: this.keysDisabledMessage
-                    });
-                }));
-            }
-            componentWillUnmount() {
-                this.toggleBaseEvents(!1);
-            }
-            render() {
-                const {notification: e} = this.state, t = void 0 !== e;
-                return a.createElement("div", {
-                    className: "toolbar-container panel panel-default"
-                }, a.createElement("div", {
-                    className: "panel-body"
-                }, t && this.notification, !t && this.selectorInput, !t && this.controls, a.createElement("div", {
-                    className: "col-xs-4 container submit-container"
-                }, a.createElement("button", {
-                    id: "submit-selector",
-                    className: "btn btn-success",
-                    onClick: this.onSubmit
-                }, "Done selecting"))));
-            }
-            setSelector(e) {
-                return this.setState({
-                    selector: e,
-                    notification: void 0
-                }), Promise.resolve();
-            }
-            setNotification(e) {
-                return this.setState({
-                    notification: e
-                }), Promise.resolve();
-            }
-            changeInFocus(e) {
-                return this.handleFocusChange(e, this.state.uiHasFocus), Promise.resolve();
-            }
-            get notification() {
-                return a.createElement("div", {
-                    className: "col-xs-8 container alert-container",
-                    onClick: () => this.setState({
-                        notification: void 0
-                    })
-                }, a.createElement("div", {
-                    className: "alert alert-info"
-                }, a.createElement("span", null, this.state.notification)));
-            }
-            get selectorInput() {
-                return a.createElement("div", {
-                    className: "col-xs-5 container selector-container"
-                }, a.createElement("input", {
-                    id: "active-selection",
-                    className: "form-control",
-                    disabled: !0,
-                    type: "text",
-                    value: this.state.selector
-                }));
-            }
-            get controls() {
-                return a.createElement("div", {
-                    id: "dom-controls",
-                    tabIndex: 0,
-                    className: "col-xs-3 container"
-                }, this.keyboardControls);
-            }
-            get keyboardControls() {
-                return a.createElement("div", {
-                    className: "container"
-                }, this.renderDOMControl("parent", "P", "Press P to select parent element", this.onSelectParent), this.renderDOMControl("child", "C", "Press C to select child element", this.onSelectChild), this.renderDOMControl("element", "S", "Press S to select hovered element", () => {}, !0));
-            }
-            renderDOMControl(e, t, n, r, l) {
-                return a.createElement("div", {
-                    className: "col-xs-4 container dom-control-container"
-                }, a.createElement("button", {
-                    id: "select-" + e,
-                    className: "btn btn-primary",
-                    title: n,
-                    onClick: r,
-                    disabled: l || !this.state.keyBoardEventsEnabled
-                }, t));
-            }
-            toggleBaseEvents(e) {
-                const t = e ? "addEventListener" : "removeEventListener";
-                window[t]("focus", this.onFocus), window[t]("blur", this.onBlur), document[t]("keydown", this.keyDownHandler);
-            }
-            onSelectParent() {
-                return this.highlightOverlayService.selectParent();
-            }
-            onSelectChild() {
-                return this.highlightOverlayService.selectChild();
-            }
-            onSelectElement(e) {
-                return this.highlightOverlayService.onElementSelect({
-                    shiftKey: e.shiftKey
-                });
-            }
-            onSubmit(e) {
-                return e.preventDefault(), e.stopPropagation(), this.selectionService.lockActive();
-            }
-            onFocus() {
-                return this.handleFocusChange(this.state.parentHasFocus, !0);
-            }
-            onBlur() {
-                return this.handleFocusChange(this.state.parentHasFocus, !1);
-            }
-            handleFocusChange(e, t) {
-                const n = e || t, {notification: r} = this.state, l = n && r === this.keysDisabledMessage ? void 0 : r;
-                this.setState({
-                    keyBoardEventsEnabled: n,
-                    parentHasFocus: e,
-                    uiHasFocus: t,
-                    notification: l
-                });
-            }
-        };
-        f = r([ o.applyController(u.Targets.uiOverlay), l("design:paramtypes", [ Object, Object ]) ], f), 
-        t.Toolbar = f;
-    },
-    55: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const r = n(35);
-        t.BackgroundPort = class {
-            constructor(e) {
-                this.name = e, this.onMessage = new r.BackgroundEvent;
-            }
-            postMessage(e) {
-                this.orchestratorOnMessage(e);
-            }
-        };
-    },
-    62: function(e, t, n) {
-        "use strict";
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const r = n(76), l = n(16);
-        t.applyController = function(e) {
-            return t => class extends t {
-                constructor() {
-                    super(...arguments), this.enpoint = new r.Incoming(e, {
-                        [l.Actions.apply]: this.passToFunction.bind(this)
-                    });
-                }
-                passToFunction(e) {
-                    const {functionName: t, functionArguments: n} = e;
-                    return "function" == typeof this[t] ? this[t](...n) : Promise.reject(`Function ${t} does not exist on ${typeof this}`);
-                }
-            };
-        };
-    },
-    76: function(e, t, n) {
-        "use strict";
-        var r = this && this.__awaiter || function(e, t, n, r) {
-            return new (n || (n = Promise))((function(l, i) {
-                function a(e) {
-                    try {
-                        u(r.next(e));
-                    } catch (e) {
-                        i(e);
-                    }
-                }
-                function o(e) {
-                    try {
-                        u(r.throw(e));
-                    } catch (e) {
-                        i(e);
-                    }
-                }
-                function u(e) {
-                    var t;
-                    e.done ? l(e.value) : (t = e.value, t instanceof n ? t : new n((function(e) {
-                        e(t);
-                    }))).then(a, o);
-                }
-                u((r = r.apply(e, t || [])).next());
-            }));
-        };
-        Object.defineProperty(t, "__esModule", {
-            value: !0
-        });
-        const l = n(44), i = n(16), a = n(23);
-        class o extends l.EndpointBase {
-            receive(e, t) {
-                super.receive(e, t);
-                const {action: n} = e;
-                n !== i.Actions.response && this.handleCallback(e);
-            }
-            handleCallback(e) {
-                return r(this, void 0, void 0, (function*() {
-                    const {payload: t, action: n, callId: r, sender: l} = e;
-                    try {
-                        const e = {
-                            callId: r,
-                            success: !0,
-                            responsePayload: yield this.callbacks[n](t)
-                        };
-                        this.postResponse(l, e);
-                    } catch (e) {
-                        const t = {
-                            callId: r,
-                            success: !1,
-                            responsePayload: a.default.getMessage(e)
-                        };
-                        this.postResponse(l, t);
-                    }
-                }));
-            }
-        }
-        t.Incoming = o;
-    },
-    8: function(e, t, n) {
-        "use strict";
-        !function e() {
-            if ("undefined" != typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" == typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE) {
-                0;
-                try {
-                    __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(e);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }(), e.exports = n(139);
     }
 });
