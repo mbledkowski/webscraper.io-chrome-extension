@@ -9,7 +9,9 @@ var Job = function (url, parentSelector, scraper, parentJob, baseData) {
 	this.parentSelector = parentSelector;
 	this.scraper = scraper;
 	this.dataItems = [];
-	this.baseData = baseData || {};
+	this.baseData = baseData || {
+		'web-scraper-start-url': url
+	};
 };
 
 Job.prototype = {

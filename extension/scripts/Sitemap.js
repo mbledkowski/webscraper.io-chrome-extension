@@ -166,7 +166,9 @@ Sitemap.prototype = {
 	},
 	// return a list of columns than can be exported
 	getDataColumns: function () {
-		var columns = [];
+		var columns = [
+			'web-scraper-start-url'
+		];
 		this.selectors.forEach(function (selector) {
 
 			columns = columns.concat(selector.getDataColumns());
