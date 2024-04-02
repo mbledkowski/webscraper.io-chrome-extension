@@ -64,7 +64,12 @@ var SelectorElementClick = {
 		script.text  = "" +
 			"(function(){ " +
 			"var el = document.querySelectorAll('"+cssSelector+"')[0]; " +
-			"el.click(); " +
+			"if(el.tagName==='OPTION'){" +
+			"el.selected=true;" +
+			"el.dispatchEvent(new Event('change', { bubbles: true }));" +
+			"} else {" +
+			"el.click();" +
+			"}" +
 			"})();";
 		document.body.appendChild(script);
 	},
