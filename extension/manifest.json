@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"version": "0.3.7",
+	"version": "0.3.8",
 	"name": "Web Scraper",
 	"short_name": "Web Scraper",
 	"description": "Web site data extraction tool",
@@ -13,8 +13,9 @@
 	},
 	"browser_action": {
 		"default_icon": {
-			"19": "images/icon19.png",
-			"38": "images/icon38.png"
+			"16": "images/icon16.png",
+			"24": "images/icon24.png",
+			"32": "images/icon32.png"
 		},
 		"default_title": "Web Scraper",
 		"default_popup": "popup.html"
@@ -29,10 +30,10 @@
 	},
 	"web_accessible_resources": [
 		"images/icon16.png",
+		"images/icon24.png",
+		"images/icon32.png",
 		"images/icon48.png",
-		"images/icon128.png",
-		"images/icon19.png",
-		"images/icon38.png"
+		"images/icon128.png"
 	],
 	"content_scripts": [
 		{
