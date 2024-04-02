@@ -17,7 +17,16 @@ UniqueElementList.prototype.push = function(element) {
 	else {
 		var elementUniqueId = this.getElementUniqueId(element);
 		this.addedElements[elementUniqueId] = true;
-		Array.prototype.push.call(this, $(element).clone(true)[0]);
+		var cloned = $(element).clone(true)[0];
+
+		// fix clone isn't cloning the state of <select> elements
+		var selects = $(element).find("select");
+		$(selects).each(function(i) {
+			var select = this;
+			$(cloned).find("select").eq(i).val($(select).val());
+		});
+
+		Array.prototype.push.call(this, cloned);
 		return true;
 	}
 };
