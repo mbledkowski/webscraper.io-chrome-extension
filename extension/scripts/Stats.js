@@ -14,8 +14,10 @@ var Stats = function (options) {
 	var day = 1000 * 60 * 60 * 24;
 	this.randomFirstReportInMs = options.randomFirstReportInMs || 5 * day;
 	this.reportInMs = options.reportInMs || 6 * day;
-	this.potentialSubmitIntervalMs = options.potentialSubmitIntervalMs || 60e3;
+	this.potentialSubmitIntervalMs = options.potentialSubmitIntervalMs || 5*60e3;
 };
+
+var statsReporterInterval;
 
 Stats.prototype = {
 
@@ -439,11 +441,13 @@ Stats.prototype = {
 
 		var day = 1000 * 60 * 60 * 24;
 
+		this.stopReporter();
+
 		this.getLastTimeStatsReported()
 			.then(function (lastTimeStatsReported) {
 
 				// start submission engine
-				this.statsReporterInterval = setInterval(function () {
+				statsReporterInterval = setInterval(function () {
 
 					// check whether we need to report stats
 					var time = Date.now();
@@ -470,7 +474,7 @@ Stats.prototype = {
 
 	stopReporter: function () {
 
-		clearInterval(this.statsReporterInterval);
+		clearInterval(statsReporterInterval);
 	},
 
 	resetDailyStats: function () {
